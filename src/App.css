@@ -3,13 +3,23 @@
 }
 
 .App-logo {
-  height: 20vmin;
+  height: 5vmin;
   pointer-events: none;
+  padding: 5px
 }
 
 .Fleek-logo {
-  max-width: 100px;
+  max-width: 20vmin;
+  height: 5vmin;
+  padding: 5px
 }
+
+.eth-logo {
+  max-width: 5vmin;
+  height: 5vmin;
+  padding: 5px
+}
+
 
 @media (prefers-reduced-motion: no-preference) {
   .App-logo {
@@ -17,11 +27,12 @@
   }
 }
 
+
 .App-header {
   background-color: #202040;
   min-height: 100vh;
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: center;
   font-size: calc(10px + 2vmin);
