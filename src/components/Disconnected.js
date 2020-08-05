@@ -1,12 +1,7 @@
 import React from 'react'
-import { render } from 'react-dom'
 import './Component.css'
 import Typography from '@material-ui/core/Typography'
 import { makeStyles } from '@material-ui/core/styles'
-// import { VideoPlayer } from '@livepeer/chroma'
-import ReactHLS from 'react-hls'
-
-const STREAM_ROOT_URL = 'http://localhost:8935/stream'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -44,19 +39,23 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
-function Meet() {
+function Disconnected(props) {
   let classes = useStyles()
   return (
-    <div className="column">
-      <div id="topleft">
-        <Typography variant="h5" className={classes.gtext}>
-          🍫 Cadbury Meet
-        </Typography>
-      </div>
-      <h2>About</h2>
-      This is a cadbury meet page! under construction
+    <div className="App">
+      <header className="App-header">
+        <div className="column">
+          <div id="topleft">
+            <Typography variant="h5" className={classes.gtext}>
+              🍫 Cadbury Meet
+            </Typography>
+          </div>
+          <h2>Disengaged</h2>
+          Hope you have a good day !
+        </div>
+      </header>
     </div>
   )
 }
 
-export default Meet
+export default Disconnected

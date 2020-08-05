@@ -4,20 +4,33 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@livepeer/chroma": "^1.0.0-alpha.7",
     "@material-ui/core": "^4.11.0",
+    "@material-ui/icons": "^4.9.1",
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.3.2",
     "@testing-library/user-event": "^7.1.2",
+    "compression": "^1.7.4",
+    "css-loader": "^4.2.0",
     "eslint": "^6.6.0",
+    "express": "^4.17.1",
+    "file-loader": "^6.0.0",
     "hls.js": "^0.14.5",
     "prettier": "^2.0.5",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
+    "react-hls": "0.0.8",
+    "react-redux": "^7.2.1",
     "react-router-dom": "^5.2.0",
     "react-scripts": "3.4.1",
-    "react-webcam": "^5.2.0"
+    "react-webcam": "^5.2.0",
+    "redux": "^4.0.5",
+    "serve-favicon": "^2.5.0",
+    "socket.io": "^2.3.0"
   },
   "scripts": {
+    "dev": "webpack --mode development",
+    "buildw": "webpack --mode production",
     "lint": "eslint ./ --ignore-path .gitignore",
     "lint:fix": "npm run lint -- --fix",
     "format": "prettier --write \"{,!(node_modules)/**/}*.js\"",
@@ -43,13 +56,19 @@
     ]
   },
   "devDependencies": {
+    "@babel/core": "^7.11.0",
+    "@babel/plugin-proposal-class-properties": "^7.10.4",
+    "@babel/preset-env": "^7.11.0",
+    "@babel/preset-react": "^7.10.4",
     "@imaginary-cloud/eslint-config-react": "1.0.1",
+    "babel-loader": "^8.1.0",
     "eslint-config-airbnb": "^18.1.0",
     "eslint-config-prettier": "^6.10.1",
     "eslint-plugin-import": "^2.20.2",
     "eslint-plugin-jsx-a11y": "^6.2.3",
     "eslint-plugin-prettier": "^3.1.3",
     "eslint-plugin-react": "^7.19.0",
-    "eslint-plugin-react-hooks": "^2.5.1"
+    "eslint-plugin-react-hooks": "^2.5.1",
+    "webpack-cli": "^3.3.12"
   }
 }

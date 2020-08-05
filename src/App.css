@@ -51,3 +51,46 @@
     transform: rotate(360deg);
   }
 }
+
+.message{
+    color: #fff;
+}
+
+.msg{
+    color: #fff;
+}
+
+.chatHeader{
+    text-align: center;
+    padding: 20;
+    justify-content: flex-start;
+    color: darkgray;
+    font-size: 20px;
+    border-radius: 10px
+}
+
+.chatWindow{
+    border-radius: 10px
+}
+
+/* jhgvjhgv */
+input[type=text] {
+    border: none;
+    font-size: 1em;
+    background-color: transparent;
+    color: #fff;
+    padding: .10em 0;
+    margin: 2ex 0;
+    width: 100%;
+    max-width: 18em;
+    display: block;
+    padding: 20px;
+    spellcheck:"false";
+}
+
+
+.inputChat{
+    color: darkgray;
+}
+
+
