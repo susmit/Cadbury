@@ -3,6 +3,18 @@
 
 Open,neutral,bodorles,decentralized and Censorship resistance Meetings(Google Meet / Zoom) powered by web 3.
 
+![Cadbury Image](https://i.ibb.co/0s6RrB1/Screenshot-2020-07-17-at-8-26-26-PM.png)
+
+Core Team [Ayush Ranjan](https://github.com/ranjan3118)  
+
+![Cadbury Image](https://i.ibb.co/CBLB9w0/pok.jpg)
+
+### Landing Page:-
+
+Fleek https://cadbury.on.fleek.co/
+
+IPFS https://ipfs.fleek.co/ipfs/QmTFJZQwtrJTV4FmLfZDSZgFC64q8ExLVEFG4CXCeR9GXF/
+
 ### Meeting's Infra
 * Capture media from web cam. 
 * Connection libp2p js webrtc on browser.
