@@ -36,7 +36,7 @@ io.on('connection', (socket) => {
 })
 
 // https://www.tutorialspoint.com/socket.io/socket.io_namespaces.htm
-const peers = io.of('https://meet-cadbury.herokuapp.com/webrtcPeer')
+const peers = io.of('/webrtcPeer')
 
 // keep a reference of all socket connections
 // let connectedPeers = new Map()

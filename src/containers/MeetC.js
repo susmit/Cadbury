@@ -54,7 +54,7 @@ class MeetC extends Component {
     }
 
     // DONT FORGET TO CHANGE TO YOUR URL
-    this.serviceIP = '/webrtcPeer'
+    this.serviceIP = 'https://meet-cadbury.herokuapp.com/webrtcPeer'
 
     this.socket = null
     // this.candidates = []
