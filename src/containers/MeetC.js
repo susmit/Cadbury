@@ -498,7 +498,7 @@ class MeetC extends Component {
             zIndex: 1,
             position: 'fixed',
             bottom: 0,
-            minWidth: '60%',
+            minWidth: '100%',
             minHeight: '100%',
             backgroundColor: '#202040',
           }}
