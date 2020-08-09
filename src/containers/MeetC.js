@@ -60,8 +60,8 @@ class MeetC extends Component {
 
     this.socket = null
     // this.candidates = []
-    const host = "http://0.0.0.0:6002" // or whatever powergate instance you want
-    this.pow = createPow({ host })
+    // const host = "http://0.0.0.0:6002" // or whatever powergate instance you want
+    // this.pow = createPow({ host })
   }
 
   // async function setStream(){
