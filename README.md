@@ -7,9 +7,13 @@ Open,neutral,bodorles,decentralized and Censorship resistance Meetings(Google Me
 
 Core Team [Ayush Ranjan](https://github.com/ranjan3118)  
 
-![Cadbury Image](https://i.ibb.co/F5XMvXv/Screenshot-2020-08-09-at-11-49-54-AM.png")
+![Cadbury Image](https://i.ibb.co/F5XMvXv/Screenshot-2020-08-09-at-11-49-54-AM.png)
 
-![Cadbury Image](https://i.ibb.co/BqTCk34/Screenshot-2020-08-06-at-10-17-31-PM.png")
+![Cadbury Image](https://i.ibb.co/BqTCk34/Screenshot-2020-08-06-at-10-17-31-PM.png)
+
+![Cadbury Image](https://i.ibb.co/S78vm7Z/Screenshot-2020-08-09-at-2-24-20-PM.png)
+
+![Cadbury Image](https://i.ibb.co/KxDKsdf/Screenshot-2020-08-09-at-2-24-06-PM.png)
 
 ### Working Product:-
 
