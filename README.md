@@ -36,6 +36,7 @@ Signaling https://meet-cadbury.herokuapp.com/
 * Ethtereum SMC handles rating system via metamask
 * Hosted via fleek on IPFS Utilizing Unstoppable domains
 * Pinata for manual meeting code archive (complementing pieces).
+* [WIP] Meeting artifacts on filecoin/ipfs via textile powergate. (A FFS API instance for every peer to be spwaned)
  
 
 ### Meeting's Mechanics

@@ -103,7 +103,7 @@ function Landing() {
                       neutral,
                     </Typography>
                     <Typography variant="body1">
-                      bodorless, decentralized and censorship resistance for all
+                      bordorless, decentralized and censorship resistance for all
                     </Typography>
                     <br></br>
                     <div className="row" justify="center">

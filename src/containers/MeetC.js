@@ -13,6 +13,8 @@ import Fab from '@material-ui/core/Fab'
 import PeopleIcon from '@material-ui/icons/People'
 import Badge from '@material-ui/core/Badge'
 import Typography from '@material-ui/core/Typography'
+//import { createPow } from "@textile/powergate-client"
+
 
 const useStyles = makeStyles({
   root: {
@@ -58,7 +60,28 @@ class MeetC extends Component {
 
     this.socket = null
     // this.candidates = []
+    const host = "http://0.0.0.0:6002" // or whatever powergate instance you want
+    this.pow = createPow({ host })
   }
+
+  // async function setStream(){
+  //   const { token } = await this.pow.ffs.create();
+  //   this.pow.setToken(authToken)
+  //   const { cid } = await pow.ffs.stage(buffer)
+  //   const { jobId } = await pow.ffs.pushStorageConfig(cid)
+      // const jobsCancel = pow.ffs.watchJobs((job) => {
+      //   if (job.status === JobStatus.JOB_STATUS_CANCELED) {
+      //     console.log("job canceled")
+      //   } else if (job.status === JobStatus.JOB_STATUS_FAILED) {
+      //     console.log("job failed")
+      //   } else if (job.status === JobStatus.JOB_STATUS_SUCCESS) {
+      //     console.log("job success!")
+      //   }
+      // }, jobId)
+      // const { cidInfo } = await pow.ffs.show(cid)
+  // }
+
+
 
   getLocalStream = () => {
     // called when getUserMedia() successfully returns - see below
