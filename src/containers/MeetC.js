@@ -33,7 +33,7 @@ class MeetC extends Component {
       peerConnections: {}, // holds all Peer Connections
       selectedVideo: null,
 
-      status: 'Share link with attendees',
+      status: 'Share code/link with attendees',
 
       pc_config: {
         iceServers: [
@@ -102,24 +102,15 @@ class MeetC extends Component {
       console.log('getUserMedia Error: ', e)
     }
 
-    // https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
-    // see the above link for more constraint options
+
     const constraints = {
       audio: true,
       video: true,
-      // video: {
-      //   width: 1280,
-      //   height: 720
-      // },
-      // video: {
-      //   width: { min: 1280 },
-      // }
       options: {
         mirror: true,
       },
     }
 
-    // https://developer.mozilla.org/en-US/docs/Web/API/MediaDevices/getUserMedia
     navigator.mediaDevices
       .getUserMedia(constraints)
       .then(success)
@@ -171,12 +162,12 @@ class MeetC extends Component {
         let remoteStreams = this.state.remoteStreams
         let remoteVideo = {}
 
-        // 1. check if stream already exists in remoteStreams
+       
         const rVideos = this.state.remoteStreams.filter(
           (stream) => stream.id === socketID,
         )
 
-        // 2. if it does exist then add track
+        
         if (rVideos.length) {
           _remoteStream = rVideos[0].stream
           _remoteStream.addTrack(e.track, _remoteStream)
@@ -191,7 +182,7 @@ class MeetC extends Component {
             )
           })
         } else {
-          // 3. if not, then create new stream and add track
+          
           _remoteStream = new MediaStream()
           _remoteStream.addTrack(e.track, _remoteStream)
 
@@ -203,15 +194,9 @@ class MeetC extends Component {
           remoteStreams = [...this.state.remoteStreams, remoteVideo]
         }
 
-        // const remoteVideo = {
-        //   id: socketID,
-        //   name: socketID,
-        //   stream: e.streams[0]
-        // }
 
         this.setState((prevState) => {
-          // If we already have a stream in display let it stay the same, otherwise use the latest stream
-          // const remoteStream = prevState.remoteStreams.length > 0 ? {} : { remoteStream: e.streams[0] }
+
           const remoteStream =
             prevState.remoteStreams.length > 0
               ? {}
@@ -271,7 +256,7 @@ class MeetC extends Component {
       const status =
         data.peerCount > 1
           ? `${window.location.pathname}: ${data.peerCount} Peers`
-          : 'Share link with other peers to connect'
+          : 'Share code/link with other peers to connect'
 
       this.setState({
         status: status,
@@ -284,7 +269,7 @@ class MeetC extends Component {
         status:
           data.peerCount > 1
             ? `${window.location.pathname}: ${data.peerCount} Peers`
-            : 'Share link with other peers to connect',
+            : 'Share code/link with other peers to connect',
       })
     })
 
@@ -309,7 +294,7 @@ class MeetC extends Component {
           status:
             data.peerCount > 1
               ? `${window.location.pathname}: ${data.peerCount} Peers`
-              : 'Share link with other peers to connect',
+              : 'Share code/link with other peers to connect',
         }
       })
     })
@@ -590,6 +575,16 @@ class MeetC extends Component {
           ></Videos>
         </div>
         <br />
+
+         <Draggable
+          style={{
+            zIndex: 100,
+            position: 'absolute',
+            right: 0,
+            cursor: 'move',
+          }}
+        >
+        
         <Chat
           user={{
             uid: (this.socket && this.socket.id) || '',
@@ -608,6 +603,7 @@ class MeetC extends Component {
             })
           }}
         />
+        </Draggable>
       </div>
     )
   }

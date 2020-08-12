@@ -101,14 +101,14 @@ const Chat = (props) => {
       <div
         className="chatWindow"
         style={{
-          zIndex: 10,
-          position: 'absolute',
+          zIndex: 1,
+          position: 'fixed',
           right: 0,
           top: 0,
           bottom: 0,
           width: 350,
           background: 'linear-gradient(45deg, #9c7e46 30%, #CBB386 90%)',
-          // height: 650,
+          height: 650,
         }}
       >
         <div className = "chatHeader"
@@ -157,7 +157,7 @@ const Chat = (props) => {
               <TextField
                 className="textarea input"
                 type="text"
-                placeholder="Enter your message/drop your image here"
+                placeholder="Enter Msg/Drop Img"
                 onChange={handleChange}
                 value={message}
               />

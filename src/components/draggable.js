@@ -6,14 +6,12 @@ var Draggable = (props) => {
   const [position, setPosition] = useState({ x: 0, y: 0 })
   const ref = useRef()
 
-  // Monitor changes to position state and update DOM
   useEffect(() => {
     if (ref.current) {
       ref.current.style.transform = `translate(${position.x}px, ${position.y}px)`
     }
   }, [position])
 
-  // Update the current position if mouse is down
   const onMouseMove = (event) => {
     if (pressed) {
       setPosition({
