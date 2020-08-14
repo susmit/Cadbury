@@ -5,17 +5,16 @@ import Home from '../components/Home'
 class HomeC extends Component {
   constructor(props) {
     super(props)
-    this.defaultRoomId =
-      this.makeid(3) + '-' + this.makeid(4) + '-' + this.makeid(3)
+    this.defaultRoomId = `${this.makeid(3)}-${this.makeid(4)}-${this.makeid(3)}`
     this.state = { roomId: this.defaultRoomId }
     this.handleChange = this.handleChange.bind(this)
   }
 
   makeid(length) {
-    var result = ''
-    var characters = 'abcdefghijklmnopqrstuvwxyz'
-    var charactersLength = characters.length
-    for (var i = 0; i < length; i++) {
+    let result = ''
+    const characters = 'abcdefghijklmnopqrstuvwxyz'
+    const charactersLength = characters.length
+    for (let i = 0; i < length; i++) {
       result += characters.charAt(Math.floor(Math.random() * charactersLength))
     }
     return result

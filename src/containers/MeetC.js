@@ -15,7 +15,6 @@ import Badge from '@material-ui/core/Badge'
 import Typography from '@material-ui/core/Typography'
 //import { createPow } from "@textile/powergate-client"
 
-
 const useStyles = makeStyles({
   root: {
     width: 500,
@@ -59,49 +58,20 @@ class MeetC extends Component {
     this.serviceIP = 'https://meet-cadbury.herokuapp.com/webrtcPeer'
 
     this.socket = null
-    // this.candidates = []
-    // const host = "http://0.0.0.0:6002" // or whatever powergate instance you want
-    // this.pow = createPow({ host })
   }
 
-  // async function setStream(){
-  //   const { token } = await this.pow.ffs.create();
-  //   this.pow.setToken(authToken)
-  //   const { cid } = await pow.ffs.stage(buffer)
-  //   const { jobId } = await pow.ffs.pushStorageConfig(cid)
-      // const jobsCancel = pow.ffs.watchJobs((job) => {
-      //   if (job.status === JobStatus.JOB_STATUS_CANCELED) {
-      //     console.log("job canceled")
-      //   } else if (job.status === JobStatus.JOB_STATUS_FAILED) {
-      //     console.log("job failed")
-      //   } else if (job.status === JobStatus.JOB_STATUS_SUCCESS) {
-      //     console.log("job success!")
-      //   }
-      // }, jobId)
-      // const { cidInfo } = await pow.ffs.show(cid)
-  // }
-
-
-
   getLocalStream = () => {
-    // called when getUserMedia() successfully returns - see below
-    // getUserMedia() returns a MediaStream object (https://developer.mozilla.org/en-US/docs/Web/API/MediaStream)
     const success = (stream) => {
       window.localStream = stream
-      // this.localVideoref.current.srcObject = stream
-      // this.pc.addStream(stream);
       this.setState({
         localStream: stream,
       })
 
       this.whoisOnline()
     }
-
-    // called when getUserMedia() fails - see below
     const failure = (e) => {
       console.log('getUserMedia Error: ', e)
     }
-
 
     const constraints = {
       audio: true,
@@ -118,7 +88,6 @@ class MeetC extends Component {
   }
 
   whoisOnline = () => {
-    // let all peers know I am joining
     this.sendToPeer('onlinePeers', null, { local: this.socket.id })
   }
 
@@ -133,7 +102,6 @@ class MeetC extends Component {
     try {
       let pc = new RTCPeerConnection(this.state.pc_config)
 
-      // add pc to peerConnections object
       const peerConnections = { ...this.state.peerConnections, [socketID]: pc }
       this.setState({
         peerConnections,
@@ -148,26 +116,17 @@ class MeetC extends Component {
         }
       }
 
-      pc.oniceconnectionstatechange = (e) => {
-        // if (pc.iceConnectionState === 'disconnected') {
-        //   const remoteStreams = this.state.remoteStreams.filter(stream => stream.id !== socketID)
-        //   this.setState({
-        //     remoteStream: remoteStreams.length > 0 && remoteStreams[0].stream || null,
-        //   })
-        // }
-      }
+      pc.oniceconnectionstatechange = (e) => {}
 
       pc.ontrack = (e) => {
         let _remoteStream = null
         let remoteStreams = this.state.remoteStreams
         let remoteVideo = {}
 
-       
         const rVideos = this.state.remoteStreams.filter(
           (stream) => stream.id === socketID,
         )
 
-        
         if (rVideos.length) {
           _remoteStream = rVideos[0].stream
           _remoteStream.addTrack(e.track, _remoteStream)
@@ -182,7 +141,6 @@ class MeetC extends Component {
             )
           })
         } else {
-          
           _remoteStream = new MediaStream()
           _remoteStream.addTrack(e.track, _remoteStream)
 
@@ -194,49 +152,40 @@ class MeetC extends Component {
           remoteStreams = [...this.state.remoteStreams, remoteVideo]
         }
 
-
         this.setState((prevState) => {
-
           const remoteStream =
             prevState.remoteStreams.length > 0
               ? {}
               : { remoteStream: _remoteStream }
 
-          // get currently selected video
           let selectedVideo = prevState.remoteStreams.filter(
             (stream) => stream.id === prevState.selectedVideo.id,
           )
-          // if the video is still in the list, then do nothing, otherwise set to new video stream
+
           selectedVideo = selectedVideo.length
             ? {}
             : { selectedVideo: remoteVideo }
 
           return {
-            // selectedVideo: remoteVideo,
             ...selectedVideo,
-            // remoteStream: e.streams[0],
+
             ...remoteStream,
-            remoteStreams, //: [...prevState.remoteStreams, remoteVideo]
+            remoteStreams,
           }
         })
       }
 
-      pc.close = () => {
-        // alert('GONE')
-      }
+      pc.close = () => {}
 
       if (this.state.localStream)
-        // pc.addStream(this.state.localStream)
-
         this.state.localStream.getTracks().forEach((track) => {
           pc.addTrack(track, this.state.localStream)
         })
 
-      // return pc
       callback(pc)
     } catch (e) {
       console.log('Something went wrong! pc not created!!', e)
-      // return;
+
       callback(null)
     }
   }
@@ -281,14 +230,12 @@ class MeetC extends Component {
       )
 
       this.setState((prevState) => {
-        // check if disconnected peer is the selected video and if there still connected peers, then select the first
         const selectedVideo =
           prevState.selectedVideo.id === data.socketID && remoteStreams.length
             ? { selectedVideo: remoteStreams[0] }
             : null
 
         return {
-          // remoteStream: remoteStreams.length > 0 && remoteStreams[0].stream || null,
           remoteStreams,
           ...selectedVideo,
           status:
@@ -302,12 +249,8 @@ class MeetC extends Component {
     this.socket.on('online-peer', (socketID) => {
       console.log('connected peers ...', socketID)
 
-      // create and send offer to the peer (data.socketID)
-      // 1. Create new pc
       this.createPeerConnection(socketID, (pc) => {
-        // 2. Create Offer
         if (pc) {
-          // Send Channel
           const handleSendChannelStatusChange = (event) => {
             console.log(
               'send channel status: ' + this.state.sendChannels[0].readyState,
@@ -324,7 +267,6 @@ class MeetC extends Component {
             }
           })
 
-          // Receive Channels
           const handleReceiveMessage = (event) => {
             const message = JSON.parse(event.data)
             console.log(message)
@@ -369,7 +311,6 @@ class MeetC extends Component {
       this.createPeerConnection(data.socketID, (pc) => {
         pc.addStream(this.state.localStream)
 
-        // Send Channel
         const handleSendChannelStatusChange = (event) => {
           console.log(
             'send channel status: ' + this.state.sendChannels[0].readyState,
@@ -386,7 +327,6 @@ class MeetC extends Component {
           }
         })
 
-        // Receive Channels
         const handleReceiveMessage = (event) => {
           const message = JSON.parse(event.data)
           console.log(message)
@@ -417,7 +357,6 @@ class MeetC extends Component {
 
         pc.setRemoteDescription(new RTCSessionDescription(data.sdp)).then(
           () => {
-            // 2. Create Answer
             pc.createAnswer(this.state.sdpConstraints).then((sdp) => {
               pc.setLocalDescription(sdp)
 
@@ -432,7 +371,6 @@ class MeetC extends Component {
     })
 
     this.socket.on('answer', (data) => {
-      // get remote's peerConnection
       const pc = this.state.peerConnections[data.socketID]
       console.log(data.sdp)
       pc.setRemoteDescription(
@@ -441,7 +379,6 @@ class MeetC extends Component {
     })
 
     this.socket.on('candidate', (data) => {
-      // get remote's peerConnection
       const pc = this.state.peerConnections[data.socketID]
 
       if (pc) pc.addIceCandidate(new RTCIceCandidate(data.candidate))
@@ -480,13 +417,7 @@ class MeetC extends Component {
         >
           <Video
             videoStyles={{
-              // zIndex:2,
-              // position: 'absolute',
-              // right:0,
               width: 200,
-              // height: 200,
-              // margin: 5,
-              // backgroundColor: 'black'
             }}
             frameStyle={{
               width: 200,
@@ -495,7 +426,6 @@ class MeetC extends Component {
               backgroundColor: '#202040',
             }}
             showMuteControls={true}
-            // ref={this.localVideoref}
             videoStream={this.state.localStream}
             autoPlay
             muted
@@ -510,7 +440,6 @@ class MeetC extends Component {
             minHeight: '100%',
             backgroundColor: '#202040',
           }}
-          // ref={ this.remoteVideoref }
           videoStream={
             this.state.selectedVideo && this.state.selectedVideo.stream
           }
@@ -523,25 +452,23 @@ class MeetC extends Component {
             position: 'absolute',
             color: 'white',
             margin: 10,
-            //backgroundColor: '#cdc4ff4f',
+
             padding: 20,
             borderRadius: 5,
           }}
-        >  <div 
-        style={{
-          padding: 10,
-     
-        }}
         >
-          <Badge color="secondary" variant="dot">
-            <PeopleIcon />
-          </Badge>
-          </div>
-
+          {' '}
           <div
             style={{
-              //margin: 10,
-              //backgroundColor: '#cdc4ff4f',
+              padding: 10,
+            }}
+          >
+            <Badge color="secondary" variant="dot">
+              <PeopleIcon />
+            </Badge>
+          </div>
+          <div
+            style={{
               padding: 10,
               borderRadius: 5,
             }}
@@ -576,7 +503,7 @@ class MeetC extends Component {
         </div>
         <br />
 
-         <Draggable
+        <Draggable
           style={{
             zIndex: 100,
             position: 'absolute',
@@ -584,25 +511,24 @@ class MeetC extends Component {
             cursor: 'move',
           }}
         >
-        
-        <Chat
-          user={{
-            uid: (this.socket && this.socket.id) || '',
-          }}
-          messages={this.state.messages}
-          sendMessage={(message) => {
-            this.setState((prevState) => {
-              return { messages: [...prevState.messages, message] }
-            })
-            this.state.sendChannels.map((sendChannel) => {
-              sendChannel.readyState === 'open' &&
-                sendChannel.send(JSON.stringify(message))
-            })
-            this.sendToPeer('new-message', JSON.stringify(message), {
-              local: this.socket.id,
-            })
-          }}
-        />
+          <Chat
+            user={{
+              uid: (this.socket && this.socket.id) || '',
+            }}
+            messages={this.state.messages}
+            sendMessage={(message) => {
+              this.setState((prevState) => {
+                return { messages: [...prevState.messages, message] }
+              })
+              this.state.sendChannels.map((sendChannel) => {
+                sendChannel.readyState === 'open' &&
+                  sendChannel.send(JSON.stringify(message))
+              })
+              this.sendToPeer('new-message', JSON.stringify(message), {
+                local: this.socket.id,
+              })
+            }}
+          />
         </Draggable>
       </div>
     )

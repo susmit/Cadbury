@@ -91,7 +91,7 @@ function Home(props) {
       <div className={classes.root}>
         <Grid container spacing={2} alignItems="center" justify="center">
           <Grid item xs>
-          <div></div>
+            <div></div>
           </Grid>
           <Grid item xs>
             <Box
@@ -102,7 +102,6 @@ function Home(props) {
             >
               <div className="column" justify="center">
                 <h3>Meeting ready</h3>
-                {/* <p>id: adfc-grvf-fsf</p> */}
                 <CssTextField
                   type="text"
                   name="room"
@@ -120,7 +119,7 @@ function Home(props) {
                   <br></br>
                 </div>
                 <Link
-                  to={'/' + props.roomId}
+                  to={`/${props.roomId}`}
                   style={{ textDecoration: 'none' }}
                 >
                   <Button variant="contained" className={classes.butt}>

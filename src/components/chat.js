@@ -1,8 +1,6 @@
-// https://www.freecodecamp.org/news/building-a-modern-chat-application-with-react-js-558896622194/
-
 import React, { useState, useEffect, useRef } from 'react'
-import DragDrop from './dragDrop'
 import TextField from '@material-ui/core/TextField'
+import DragDrop from './dragDrop'
 
 const Chat = (props) => {
   const [message, setMessage] = useState('')
@@ -44,7 +42,7 @@ const Chat = (props) => {
   }
 
   const renderMessage = (userType, data) => {
-    const message = data.message
+    const { message } = data
 
     const msgDiv = (data.type === 'text' && (
       <div className="msg">
@@ -62,7 +60,6 @@ const Chat = (props) => {
           className="message"
           style={{
             width: 200,
-            // height: 100
             cursor: 'pointer',
           }}
           src={message.data}
@@ -73,26 +70,24 @@ const Chat = (props) => {
     return <li className={userType}>{msgDiv}</li>
   }
 
-  const showEnlargedImage = (data) => {
-    return (
-      <img
-        src={data}
-        style={{
-          backgroundColor: 'black',
-          background: 'linear-gradient(45deg, #9c7e46 30%, #CBB386 90%)',
-          position: 'relative',
-          zIndex: 100,
-          display: 'block',
-          cursor: 'pointer',
-          marginLeft: 'auto',
-          marginRight: 'auto',
-          padding: 20,
-          borderRadius: 20,
-        }}
-        onClick={() => setImageZoom(false)}
-      />
-    )
-  }
+  const showEnlargedImage = (data) => (
+    <img
+      src={data}
+      style={{
+        backgroundColor: 'black',
+        background: 'linear-gradient(45deg, #9c7e46 30%, #CBB386 90%)',
+        position: 'relative',
+        zIndex: 100,
+        display: 'block',
+        cursor: 'pointer',
+        marginLeft: 'auto',
+        marginRight: 'auto',
+        padding: 20,
+        borderRadius: 20,
+      }}
+      onClick={() => setImageZoom(false)}
+    />
+  )
 
   return (
     <div>
@@ -111,7 +106,8 @@ const Chat = (props) => {
           height: 650,
         }}
       >
-        <div className = "chatHeader"
+        <div
+          className="chatHeader"
           style={{
             background: 'white',
             height: 50,
@@ -134,9 +130,7 @@ const Chat = (props) => {
           sendFiles={(files) => {
             const reader = new FileReader()
             reader.onload = (e) => {
-              //https://blog.mozilla.org/webrtc/large-data-channel-messages/
-              //https://lgrahl.de/articles/demystifying-webrtc-dc-size-limit.html
-              const maximumMessageSize = 262118 //65535 <=== 64KiB // 16384 <=== 16KiB to be safe
+              const maximumMessageSize = 262118
               if (e.target.result.length <= maximumMessageSize)
                 sendMessage({
                   type: 'image',
@@ -152,7 +146,15 @@ const Chat = (props) => {
             reader.readAsDataURL(files[0])
           }}
         >
-          <div className = "inputChat" style={{ position: 'absolute', bottom: '0px',width :350,borderRadius: 10}}>
+          <div
+            className="inputChat"
+            style={{
+              position: 'absolute',
+              bottom: '0px',
+              width: 350,
+              borderRadius: 10,
+            }}
+          >
             <form onSubmit={handleSubmit}>
               <TextField
                 className="textarea input"

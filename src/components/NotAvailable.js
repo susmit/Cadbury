@@ -40,7 +40,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 function NotAvailable() {
-  let classes = useStyles()
+  const classes = useStyles()
   return (
     <div className="App">
       <header className="App-header">

@@ -1,7 +1,6 @@
-//https://stackoverflow.com/questions/20926551/recommended-way-of-making-react-component-div-draggable
 import React, { useState, useEffect, useRef } from 'react'
 
-var Draggable = (props) => {
+const Draggable = (props) => {
   const [pressed, setPressed] = useState(false)
   const [position, setPosition] = useState({ x: 0, y: 0 })
   const ref = useRef()

@@ -1,13 +1,11 @@
-//https://medium.com/@650egor/simple-drag-and-drop-file-upload-in-react-2cb409d88929
 import React, { useState, useEffect, useRef } from 'react'
 
-var DragDrop = (props) => {
+const DragDrop = (props) => {
   const [bgColor, setBgColor] = useState('transparent')
 
   const changeBgColor = (state) => {
     console.log(state)
     setBgColor((state && 'green') || 'transparent')
-    // setBgColor('green')
   }
 
   return (
@@ -16,7 +14,6 @@ var DragDrop = (props) => {
         backgroundColor: bgColor,
       }}
       className={props.className}
-      // ref={ref}
       onDragEnter={(e) => {
         e.preventDefault()
         e.stopPropagation()

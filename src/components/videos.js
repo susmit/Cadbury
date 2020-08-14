@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import Video from './video'
 import Fab from '@material-ui/core/Fab'
+import Video from './video'
 
 class Videos extends Component {
   constructor(props) {
@@ -14,12 +14,12 @@ class Videos extends Component {
 
   componentWillReceiveProps(nextProps) {
     if (this.props.remoteStreams !== nextProps.remoteStreams) {
-      let _rVideos = nextProps.remoteStreams.map((rVideo, index) => {
+      const _rVideos = nextProps.remoteStreams.map((rVideo, index) => {
         const _videoTrack = rVideo.stream
           .getTracks()
           .filter((track) => track.kind === 'video')
 
-        let video = (_videoTrack && (
+        const video = (_videoTrack && (
           <Video
             videoStream={rVideo.stream}
             frameStyle={{ width: 120, float: 'left', padding: '0 3px' }}
@@ -67,7 +67,7 @@ class Videos extends Component {
           bottom: 0,
           overflowX: 'scroll',
           whiteSpace: 'nowrap',
-          borderRadius : 10
+          borderRadius: 10,
         }}
       >
         {this.state.rVideos}

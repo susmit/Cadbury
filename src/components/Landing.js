@@ -1,6 +1,16 @@
 import React from 'react'
 import './Component.css'
 import { Link } from 'react-router-dom'
+import Button from '@material-ui/core/Button'
+import {
+  makeStyles,
+  createMuiTheme,
+  ThemeProvider,
+} from '@material-ui/core/styles'
+import Paper from '@material-ui/core/Paper'
+import Grid from '@material-ui/core/Grid'
+import Box from '@material-ui/core/Box'
+import Typography from '@material-ui/core/Typography'
 import pinataL from '../pinata.png'
 import textileLogo from '../textile.png'
 import libp2pL from '../libp2p.png'
@@ -9,13 +19,6 @@ import ipfsLogo from '../ipfs.png'
 import fleekLogo from '../fleek-logo.png'
 import logo from '../logo.svg'
 import meeting from '../meeting.jpg'
-import Button from '@material-ui/core/Button'
-import { makeStyles } from '@material-ui/core/styles'
-import Paper from '@material-ui/core/Paper'
-import Grid from '@material-ui/core/Grid'
-import Box from '@material-ui/core/Box'
-import Typography from '@material-ui/core/Typography'
-import { createMuiTheme, ThemeProvider } from '@material-ui/core/styles'
 
 const theme = createMuiTheme({
   typography: {
@@ -103,7 +106,8 @@ function Landing() {
                       neutral,
                     </Typography>
                     <Typography variant="body1">
-                      bordorless, decentralized and censorship resistance for all
+                      bordorless, decentralized and censorship resistance for
+                      all
                     </Typography>
                     <br></br>
                     <div className="row" justify="center">

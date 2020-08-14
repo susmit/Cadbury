@@ -3,7 +3,6 @@ import { render } from 'react-dom'
 import './Component.css'
 import Typography from '@material-ui/core/Typography'
 import { makeStyles } from '@material-ui/core/styles'
-// import { VideoPlayer } from '@livepeer/chroma'
 import ReactHLS from 'react-hls'
 
 const STREAM_ROOT_URL = 'http://localhost:8935/stream'
@@ -45,7 +44,7 @@ const useStyles = makeStyles((theme) => ({
 }))
 
 function Meet() {
-  let classes = useStyles()
+  const classes = useStyles()
   return (
     <div className="column">
       <div id="topleft">
