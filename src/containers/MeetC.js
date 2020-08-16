@@ -77,6 +77,7 @@ class MeetC extends Component {
     const accounts = await web3.eth.getAccounts()
     console.log(accounts[0])
     let box = await Box.openBox(accounts[0], window.ethereum)
+    await box.syncDone
     if (!Box.isLoggedIn(accounts[0])) {
       console.log('Not Logged In')
       // box = await Box.openBox(accounts[0], window.ethereum)
@@ -84,23 +85,23 @@ class MeetC extends Component {
       console.log('user logged in!')
       const ffsToken = await box.private.get('ffsToken')
       console.log(ffsToken)
-      if (typeof ffsToken === 'undefined') {
+      if (typeof ffsToken === 'undefined' || !ffsToken) {
         console.log("user doesn't have FFS token")
-        const createResp = await this.pow.ffs.create()
-        await box.private.set('ffsToken', createResp.token)
-        //user.ffsToken = createResp.token
-        //await save(user)
         if (!this.state.powergateStatus) {
           alert(
             'Textile Powergate offline ' +
               host +
               '\nUser Powergate FFS token:- ' +
-              createResp.token +
+              "Not Assigned "+
               '\nUser Address ' +
               accounts[0],
           )
           return
         }
+        const createResp = await this.pow.ffs.create()
+        await box.private.set('ffsToken', createResp.token)
+        //user.ffsToken = createResp.token
+        //await save(user)
         this.pow.setToken(createResp.token)
         console.log('user token generated,saved in 3box and pow set')
         console.log(createResp.token)
@@ -120,6 +121,14 @@ class MeetC extends Component {
         this.pow.setToken(ffsToken)
         const info = await this.pow.ffs.info()
         console.log(info.info)
+        alert(
+          'Textile Powergate offline ' +
+            host +
+            '\nUser Powergate FFS token:- ' +
+            ffsToken +
+            '\nUser Address ' +
+            accounts[0],
+        )
       }
     }
 
