@@ -13,13 +13,12 @@ import Fab from '@material-ui/core/Fab'
 import PeopleIcon from '@material-ui/icons/People'
 import Badge from '@material-ui/core/Badge'
 import Typography from '@material-ui/core/Typography'
-import { createPow } from "@textile/powergate-client"
-import FileCopyIcon from '@material-ui/icons/FileCopy';
+import { createPow } from '@textile/powergate-client'
+import FileCopyIcon from '@material-ui/icons/FileCopy'
 
 const Box = require('3box')
 const Web3 = require('web3')
-const host = "http://0.0.0.0:6002"
-
+const host = 'http://0.0.0.0:6002'
 
 const useStyles = makeStyles({
   root: {
@@ -58,23 +57,16 @@ class MeetC extends Component {
       sendChannels: [],
       disconnected: false,
 
-
-      listenAddr : "",
-      powergateStatus : false
-
+      listenAddr: '',
+      powergateStatus: false,
     }
 
     this.serviceIP = 'https://meet-cadbury.herokuapp.com/webrtcPeer'
     this.socket = null
-    this.pow = createPow({ host})
-
+    this.pow = createPow({ host })
   }
 
   handleFFS = async () => {
-    if(!this.state.powergateStatus){
-      alert("Textile Powergate offline " + host )
-      return ;
-    }
     if (!window.ethereum || !window.ethereum.isMetaMask) {
       alert(
         'Please install an Ethereum-compatible browser or extension like MetaMask to use this dApp!',
@@ -84,31 +76,54 @@ class MeetC extends Component {
     const web3 = new Web3(Web3.givenProvider)
     const accounts = await web3.eth.getAccounts()
     console.log(accounts[0])
-    let box = await Box.openBox(accounts[0], window.ethereum);
-    if(!Box.isLoggedIn(accounts[0])){
-      console.log("Not Logged In")
-       // box = await Box.openBox(accounts[0], window.ethereum)
-    }else{
-      console.log("user logged in!")
+    let box = await Box.openBox(accounts[0], window.ethereum)
+    if (!Box.isLoggedIn(accounts[0])) {
+      console.log('Not Logged In')
+      // box = await Box.openBox(accounts[0], window.ethereum)
+    } else {
+      console.log('user logged in!')
       const ffsToken = await box.private.get('ffsToken')
       console.log(ffsToken)
-      if( typeof(ffsToken) === 'undefined'){
+      if (typeof ffsToken === 'undefined') {
         console.log("user doesn't have FFS token")
         const createResp = await this.pow.ffs.create()
         await box.private.set('ffsToken', createResp.token)
         //user.ffsToken = createResp.token
         //await save(user)
+        if (!this.state.powergateStatus) {
+          alert(
+            'Textile Powergate offline ' +
+              host +
+              '\nUser Powergate FFS token:- ' +
+              createResp.token +
+              '\nUser Address ' +
+              accounts[0],
+          )
+          return
+        }
         this.pow.setToken(createResp.token)
-        console.log("user token generated,saved in 3box and pow set")
+        console.log('user token generated,saved in 3box and pow set')
         console.log(createResp.token)
-      }else{
-        console.log("user has FFS token")
+      } else {
+        console.log('user has FFS token')
+        if (!this.state.powergateStatus) {
+          alert(
+            'Textile Powergate offline ' +
+              host +
+              '\nUser Powergate FFS token:- ' +
+              ffsToken +
+              '\nUser Address ' +
+              accounts[0],
+          )
+          return
+        }
+        this.pow.setToken(ffsToken)
+        const info = await this.pow.ffs.info()
+        console.log(info.info)
       }
     }
 
     //const box = await Box.openBox(0x234..., window.ethereum)
-
-
   }
 
   getPowergateStatus = async () => {
@@ -119,20 +134,19 @@ class MeetC extends Component {
         this.pow.health.check(),
         this.pow.miners.get(),
       ])
-      console.log("powergate "+ JSON.stringify (respPeers.peersList))
-      console.log("powergate "+ JSON.stringify (respAddr.addrInfo))
-      console.log("powergate "+ JSON.stringify (respHealth))
-      console.log("powergate "+ JSON.stringify (respMiners.index))
+      console.log('powergate ' + JSON.stringify(respPeers.peersList))
+      console.log('powergate ' + JSON.stringify(respAddr.addrInfo))
+      console.log('powergate ' + JSON.stringify(respHealth))
+      console.log('powergate ' + JSON.stringify(respMiners.index))
       this.setState({
-        listenAddr: "Textile Powergate:- " + respAddr.addrInfo.id,
-        powergateStatus :true
+        listenAddr: 'Textile Powergate:- ' + respAddr.addrInfo.id,
+        powergateStatus: true,
       })
-
     } catch (e) {
-      console.log("Powergate 404")
+      console.log('Powergate 404')
       this.setState({
-        listenAddr: "Textile Powergate Offline (Testnet)",
-        powergateStatus : false
+        listenAddr: 'Textile Powergate Offline (Testnet)',
+        powergateStatus: false,
       })
       console.log(e)
     }
@@ -463,7 +477,6 @@ class MeetC extends Component {
     })
 
     this.getPowergateStatus()
-  
   }
 
   switchVideo = (_video) => {
@@ -474,7 +487,6 @@ class MeetC extends Component {
   }
 
   render() {
-
     if (this.state.disconnected) {
       this.socket.close()
       this.state.localStream.getTracks().forEach((track) => track.stop())
@@ -565,15 +577,18 @@ class MeetC extends Component {
               borderRadius: 5,
             }}
           >
-  
-              <Typography>{this.state.listenAddr}</Typography>
-       
+            <Typography>{this.state.listenAddr}</Typography>
           </div>
           <i
             onClick={(e) => {
               this.setState({ disconnected: true })
             }}
-            style={{ cursor: 'pointer', paddingLeft: 15, color: 'red', paddingRight: 10 }}
+            style={{
+              cursor: 'pointer',
+              paddingLeft: 15,
+              color: 'red',
+              paddingRight: 10,
+            }}
             className="material-icons"
           >
             <Fab
@@ -587,15 +602,15 @@ class MeetC extends Component {
             </Fab>
           </i>
           <Fab
-              color="primary"
-              onClick={() => {
-                console.log('FFS initiated')
-                this.handleFFS()
-              }}
-              aria-label="Call End"
-            >
-              <FileCopyIcon />
-            </Fab>
+            color="primary"
+            onClick={() => {
+              console.log('FFS initiated')
+              this.handleFFS()
+            }}
+            aria-label="Call End"
+          >
+            <FileCopyIcon />
+          </Fab>
         </div>
         <div>
           <Videos
