@@ -14,7 +14,11 @@ import PeopleIcon from '@material-ui/icons/People'
 import Badge from '@material-ui/core/Badge'
 import Typography from '@material-ui/core/Typography'
 import { createPow } from "@textile/powergate-client"
+import FileCopyIcon from '@material-ui/icons/FileCopy';
 
+const Box = require('3box')
+const Web3 = require('web3')
+const host = "http://0.0.0.0:6002"
 
 
 const useStyles = makeStyles({
@@ -33,7 +37,6 @@ class MeetC extends Component {
       remoteStreams: [],
       peerConnections: {},
       selectedVideo: null,
-      listenAddr : "",
       status: 'Share code/link with attendees',
 
       pc_config: {
@@ -54,11 +57,57 @@ class MeetC extends Component {
       messages: [],
       sendChannels: [],
       disconnected: false,
+
+
+      listenAddr : "",
+      powergateStatus : false
+
     }
 
     this.serviceIP = 'https://meet-cadbury.herokuapp.com/webrtcPeer'
     this.socket = null
-    this.pow = createPow({ host: "http://0.0.0.0:6002" })
+    this.pow = createPow({ host})
+
+  }
+
+  handleFFS = async () => {
+    if(!this.state.powergateStatus){
+      alert("Textile Powergate offline " + host )
+      return ;
+    }
+    if (!window.ethereum || !window.ethereum.isMetaMask) {
+      alert(
+        'Please install an Ethereum-compatible browser or extension like MetaMask to use this dApp!',
+      )
+    }
+    window.ethereum.enable()
+    const web3 = new Web3(Web3.givenProvider)
+    const accounts = await web3.eth.getAccounts()
+    console.log(accounts[0])
+    let box = await Box.openBox(accounts[0], window.ethereum);
+    if(!Box.isLoggedIn(accounts[0])){
+      console.log("Not Logged In")
+       // box = await Box.openBox(accounts[0], window.ethereum)
+    }else{
+      console.log("user logged in!")
+      const ffsToken = await box.private.get('ffsToken')
+      console.log(ffsToken)
+      if( typeof(ffsToken) === 'undefined'){
+        console.log("user doesn't have FFS token")
+        const createResp = await this.pow.ffs.create()
+        await box.private.set('ffsToken', createResp.token)
+        //user.ffsToken = createResp.token
+        //await save(user)
+        this.pow.setToken(createResp.token)
+        console.log("user token generated,saved in 3box and pow set")
+        console.log(createResp.token)
+      }else{
+        console.log("user has FFS token")
+      }
+    }
+
+    //const box = await Box.openBox(0x234..., window.ethereum)
+
 
   }
 
@@ -75,13 +124,15 @@ class MeetC extends Component {
       console.log("powergate "+ JSON.stringify (respHealth))
       console.log("powergate "+ JSON.stringify (respMiners.index))
       this.setState({
-        listenAddr: "Textile Powergate:- " + respAddr.addrInfo.id
+        listenAddr: "Textile Powergate:- " + respAddr.addrInfo.id,
+        powergateStatus :true
       })
 
     } catch (e) {
       console.log("Powergate 404")
       this.setState({
         listenAddr: "Textile Powergate Offline (Testnet)",
+        powergateStatus : false
       })
       console.log(e)
     }
@@ -522,7 +573,7 @@ class MeetC extends Component {
             onClick={(e) => {
               this.setState({ disconnected: true })
             }}
-            style={{ cursor: 'pointer', paddingLeft: 15, color: 'red' }}
+            style={{ cursor: 'pointer', paddingLeft: 15, color: 'red', paddingRight: 10 }}
             className="material-icons"
           >
             <Fab
@@ -535,6 +586,16 @@ class MeetC extends Component {
               <CallEndIcon />
             </Fab>
           </i>
+          <Fab
+              color="primary"
+              onClick={() => {
+                console.log('FFS initiated')
+                this.handleFFS()
+              }}
+              aria-label="Call End"
+            >
+              <FileCopyIcon />
+            </Fab>
         </div>
         <div>
           <Videos
