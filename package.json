@@ -4,6 +4,7 @@
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "3box": "^1.21.0",
     "@livepeer/chroma": "^1.0.0-alpha.7",
     "@material-ui/core": "^4.11.0",
     "@material-ui/icons": "^4.9.1",

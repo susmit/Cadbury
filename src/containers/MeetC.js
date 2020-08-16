@@ -13,7 +13,9 @@ import Fab from '@material-ui/core/Fab'
 import PeopleIcon from '@material-ui/icons/People'
 import Badge from '@material-ui/core/Badge'
 import Typography from '@material-ui/core/Typography'
-//import { createPow } from "@textile/powergate-client"
+import { createPow } from "@textile/powergate-client"
+
+
 
 const useStyles = makeStyles({
   root: {
@@ -31,7 +33,7 @@ class MeetC extends Component {
       remoteStreams: [],
       peerConnections: {},
       selectedVideo: null,
-
+      listenAddr : "",
       status: 'Share code/link with attendees',
 
       pc_config: {
@@ -54,10 +56,35 @@ class MeetC extends Component {
       disconnected: false,
     }
 
-    // DONT FORGET TO CHANGE TO YOUR URL
     this.serviceIP = 'https://meet-cadbury.herokuapp.com/webrtcPeer'
-
     this.socket = null
+    this.pow = createPow({ host: "http://0.0.0.0:6002" })
+
+  }
+
+  getPowergateStatus = async () => {
+    try {
+      const [respPeers, respAddr, respHealth, respMiners] = await Promise.all([
+        this.pow.net.peers(),
+        this.pow.net.listenAddr(),
+        this.pow.health.check(),
+        this.pow.miners.get(),
+      ])
+      console.log("powergate "+ JSON.stringify (respPeers.peersList))
+      console.log("powergate "+ JSON.stringify (respAddr.addrInfo))
+      console.log("powergate "+ JSON.stringify (respHealth))
+      console.log("powergate "+ JSON.stringify (respMiners.index))
+      this.setState({
+        listenAddr: "Textile Powergate:- " + respAddr.addrInfo.id
+      })
+
+    } catch (e) {
+      console.log("Powergate 404")
+      this.setState({
+        listenAddr: "Textile Powergate Offline (Testnet)",
+      })
+      console.log(e)
+    }
   }
 
   getLocalStream = () => {
@@ -383,6 +410,9 @@ class MeetC extends Component {
 
       if (pc) pc.addIceCandidate(new RTCIceCandidate(data.candidate))
     })
+
+    this.getPowergateStatus()
+  
   }
 
   switchVideo = (_video) => {
@@ -393,6 +423,7 @@ class MeetC extends Component {
   }
 
   render() {
+
     if (this.state.disconnected) {
       this.socket.close()
       this.state.localStream.getTracks().forEach((track) => track.stop())
@@ -476,6 +507,16 @@ class MeetC extends Component {
             <Badge color="secondary" variant="dot">
               <Typography>{statusText}</Typography>
             </Badge>
+          </div>
+          <div
+            style={{
+              padding: 10,
+              borderRadius: 5,
+            }}
+          >
+  
+              <Typography>{this.state.listenAddr}</Typography>
+       
           </div>
           <i
             onClick={(e) => {
