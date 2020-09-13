@@ -59,7 +59,7 @@ class Videos extends Component {
           zIndex: 3,
           position: 'fixed',
           padding: '6px 3px',
-          backgroundColor: 'white',
+          backgroundColor: '#CBB386',
           maxHeight: 120,
           top: 'auto',
           right: 0,

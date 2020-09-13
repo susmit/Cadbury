@@ -1,5 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react'
 import TextField from '@material-ui/core/TextField'
+import Collapse from '@material-ui/core/Collapse'
+import FormControlLabel from '@material-ui/core/FormControlLabel'
+import Switch from '@material-ui/core/Switch'
 import DragDrop from './dragDrop'
 
 const Chat = (props) => {
@@ -7,6 +10,12 @@ const Chat = (props) => {
   const [user, setUser] = useState({ uid: 0 })
   const [imageZoom, setImageZoom] = useState(false)
   const [selectedImage, setSelectedImage] = useState('')
+
+  const [checked, setChecked] = React.useState(true)
+
+  const handleChangeSwitch = () => {
+    setChecked((prev) => !prev)
+  }
 
   const scrollToBottom = () => {
     const chat = document.getElementById('chatList')
@@ -92,81 +101,106 @@ const Chat = (props) => {
   return (
     <div>
       {imageZoom && showEnlargedImage(selectedImage)}
-
       <div
-        className="chatWindow"
+        className="chatHeader"
         style={{
           zIndex: 1,
           position: 'fixed',
-          right: 0,
-          top: 0,
-          bottom: 0,
-          width: 350,
-          background: 'linear-gradient(45deg, #9c7e46 30%, #CBB386 90%)',
-          height: 650,
+          background: '#9C7E46',
+          right: 350,
+          height: 40,
+          padding: 5,
         }}
       >
+        <FormControlLabel
+          labelPlacement="start"
+          label="Chat"
+          control={
+            <Switch
+              checked={checked}
+              onChange={handleChangeSwitch}
+              color="white"
+            />
+          }
+        />
+      </div>
+      <Collapse in={checked}>
         <div
-          className="chatHeader"
+          className="chatWindow"
           style={{
-            background: 'white',
-            height: 50,
-          }}
-        >
-          {' '}
-          Chat Section
-        </div>
-        <ul className="chat" id="chatList">
-          {props.messages.map((data) => (
-            <div key={data.id}>
-              {user.uid === data.message.sender.uid
-                ? renderMessage('self', data)
-                : renderMessage('other', data)}
-            </div>
-          ))}
-        </ul>
-        <DragDrop
-          className="chatInputWrapper"
-          sendFiles={(files) => {
-            const reader = new FileReader()
-            reader.onload = (e) => {
-              const maximumMessageSize = 262118
-              if (e.target.result.length <= maximumMessageSize)
-                sendMessage({
-                  type: 'image',
-                  message: {
-                    id: user.uid,
-                    sender: { uid: user.uid },
-                    data: e.target.result,
-                  },
-                })
-              else alert('Message exceeds Maximum Message Size!')
-            }
-
-            reader.readAsDataURL(files[0])
+            zIndex: 1,
+            position: 'fixed',
+            right: 0,
+            top: 0,
+            bottom: 0,
+            width: 350,
+            background: '#CBB386',
+            height: 650,
           }}
         >
           <div
-            className="inputChat"
+            className="chatHeader"
             style={{
-              position: 'absolute',
-              bottom: '0px',
-              width: 350,
-              borderRadius: 10,
+              background: '#9C7E46',
+              height: 40,
+              padding: 5,
             }}
           >
-            <form onSubmit={handleSubmit}>
-              <TextField
-                className="textarea input"
-                type="text"
-                placeholder="Enter Msg/Drop Img"
-                onChange={handleChange}
-                value={message}
-              />
-            </form>
+            Chat Section
           </div>
-        </DragDrop>
-      </div>
+
+          <ul className="chat" id="chatList">
+            {props.messages.map((data) => (
+              <div key={data.id}>
+                {user.uid === data.message.sender.uid
+                  ? renderMessage('self', data)
+                  : renderMessage('other', data)}
+              </div>
+            ))}
+          </ul>
+          <DragDrop
+            className="chatInputWrapper"
+            sendFiles={(files) => {
+              const reader = new FileReader()
+              reader.onload = (e) => {
+                const maximumMessageSize = 262118
+                if (e.target.result.length <= maximumMessageSize)
+                  sendMessage({
+                    type: 'image',
+                    message: {
+                      id: user.uid,
+                      sender: { uid: user.uid },
+                      data: e.target.result,
+                    },
+                  })
+                else alert('Message exceeds Maximum Message Size!')
+              }
+
+              reader.readAsDataURL(files[0])
+            }}
+          >
+            <div
+              className="inputChat"
+              style={{
+                position: 'absolute',
+                bottom: '0px',
+                width: 350,
+                borderRadius: 10,
+              }}
+            >
+              <form onSubmit={handleSubmit}>
+                <TextField
+                  className="textarea input"
+                  type="text"
+                  placeholder="Enter Msg/Drop Img"
+                  onChange={handleChange}
+                  value={message}
+                />
+              </form>
+            </div>
+          </DragDrop>
+        </div>
+      </Collapse>
     </div>
   )
 }

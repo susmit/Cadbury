@@ -5,7 +5,7 @@ import io from 'socket.io-client'
 import Video from '../components/video'
 import Videos from '../components/videos'
 import Chat from '../components/chat'
-import Draggable from '../components/draggable'
+import Draggable from 'react-draggable'
 import Disconnected from '../components/Disconnected'
 import { makeStyles } from '@material-ui/core/styles'
 import CallEndIcon from '@material-ui/icons/CallEnd'
@@ -76,51 +76,41 @@ class MeetC extends Component {
     const web3 = new Web3(Web3.givenProvider)
     const accounts = await web3.eth.getAccounts()
     console.log(accounts[0])
-    let box = await Box.openBox(accounts[0], window.ethereum)
-    await box.syncDone
     if (!Box.isLoggedIn(accounts[0])) {
       console.log('Not Logged In')
       // box = await Box.openBox(accounts[0], window.ethereum)
+    }
+    let box = await Box.openBox(accounts[0], window.ethereum)
+    await box.syncDone
+    //else {
+    //   console.log('user logged in!')
+    const ffsToken = await box.private.get('ffsToken')
+    console.log(ffsToken)
+    if (typeof ffsToken === 'undefined' || !ffsToken) {
+      console.log("user doesn't have FFS token")
+      if (!this.state.powergateStatus) {
+        alert(
+          'Textile Powergate offline ' +
+            host +
+            '\nUser Powergate FFS token:- ' +
+            'Not Assigned ' +
+            '\nUser Address ' +
+            accounts[0],
+        )
+        await box.logout()
+        return
+      }
+      const createResp = await this.pow.ffs.create()
+      await box.private.set('ffsToken', createResp.token)
+      //user.ffsToken = createResp.token
+      //await save(user)
+      this.pow.setToken(createResp.token)
+      console.log('user token generated,saved in 3box and pow set')
+      console.log(createResp.token)
+      box.logout()
     } else {
-      console.log('user logged in!')
-      const ffsToken = await box.private.get('ffsToken')
-      console.log(ffsToken)
-      if (typeof ffsToken === 'undefined' || !ffsToken) {
-        console.log("user doesn't have FFS token")
-        if (!this.state.powergateStatus) {
-          alert(
-            'Textile Powergate offline ' +
-              host +
-              '\nUser Powergate FFS token:- ' +
-              "Not Assigned "+
-              '\nUser Address ' +
-              accounts[0],
-          )
-          return
-        }
-        const createResp = await this.pow.ffs.create()
-        await box.private.set('ffsToken', createResp.token)
-        //user.ffsToken = createResp.token
-        //await save(user)
-        this.pow.setToken(createResp.token)
-        console.log('user token generated,saved in 3box and pow set')
-        console.log(createResp.token)
-      } else {
-        console.log('user has FFS token')
-        if (!this.state.powergateStatus) {
-          alert(
-            'Textile Powergate offline ' +
-              host +
-              '\nUser Powergate FFS token:- ' +
-              ffsToken +
-              '\nUser Address ' +
-              accounts[0],
-          )
-          return
-        }
-        this.pow.setToken(ffsToken)
-        const info = await this.pow.ffs.info()
-        console.log(info.info)
+      console.log('user has FFS token')
+      if (!this.state.powergateStatus) {
         alert(
           'Textile Powergate offline ' +
             host +
@@ -129,7 +119,21 @@ class MeetC extends Component {
             '\nUser Address ' +
             accounts[0],
         )
+        await box.logout()
+        return
       }
+      this.pow.setToken(ffsToken)
+      const info = await this.pow.ffs.info()
+      console.log(info.info)
+      await box.logout()
+      alert(
+        'Textile Powergate offline ' +
+          host +
+          '\nUser Powergate FFS token:- ' +
+          ffsToken +
+          '\nUser Address ' +
+          accounts[0],
+      )
     }
 
     //const box = await Box.openBox(0x234..., window.ethereum)
@@ -510,29 +514,33 @@ class MeetC extends Component {
 
     return (
       <div>
-        <Draggable
-          style={{
-            zIndex: 101,
-            position: 'absolute',
-            right: 0,
-            cursor: 'move',
-          }}
-        >
-          <Video
-            videoStyles={{
-              width: 200,
+        <Draggable>
+          <div
+            style={{
+              zIndex: 101,
+              position: 'absolute',
+              left: 0,
+              top: 250,
+              cursor: 'move',
+              padding: 30,
             }}
-            frameStyle={{
-              width: 200,
-              margin: 5,
-              borderRadius: 5,
-              backgroundColor: '#202040',
-            }}
-            showMuteControls={true}
-            videoStream={this.state.localStream}
-            autoPlay
-            muted
-          ></Video>
+          >
+            <Video
+              videoStyles={{
+                width: 300,
+              }}
+              frameStyle={{
+                width: 200,
+                margin: 5,
+                borderRadius: 10,
+                backgroundColor: '#CBB386',
+              }}
+              showMuteControls={true}
+              videoStream={this.state.localStream}
+              autoPlay
+              muted
+            ></Video>
+          </div>
         </Draggable>
         <Video
           videoStyles={{
@@ -629,32 +637,35 @@ class MeetC extends Component {
         </div>
         <br />
 
-        <Draggable
-          style={{
-            zIndex: 100,
-            position: 'absolute',
-            right: 0,
-            cursor: 'move',
-          }}
-        >
-          <Chat
-            user={{
-              uid: (this.socket && this.socket.id) || '',
+        <Draggable>
+          <div
+            style={{
+              zIndex: 100,
+              position: 'absolute',
+              right: 0,
+              cursor: 'move',
+              top: 0,
             }}
-            messages={this.state.messages}
-            sendMessage={(message) => {
-              this.setState((prevState) => {
-                return { messages: [...prevState.messages, message] }
-              })
-              this.state.sendChannels.map((sendChannel) => {
-                sendChannel.readyState === 'open' &&
-                  sendChannel.send(JSON.stringify(message))
-              })
-              this.sendToPeer('new-message', JSON.stringify(message), {
-                local: this.socket.id,
-              })
-            }}
-          />
+          >
+            <Chat
+              user={{
+                uid: (this.socket && this.socket.id) || '',
+              }}
+              messages={this.state.messages}
+              sendMessage={(message) => {
+                this.setState((prevState) => {
+                  return { messages: [...prevState.messages, message] }
+                })
+                this.state.sendChannels.map((sendChannel) => {
+                  sendChannel.readyState === 'open' &&
+                    sendChannel.send(JSON.stringify(message))
+                })
+                this.sendToPeer('new-message', JSON.stringify(message), {
+                  local: this.socket.id,
+                })
+              }}
+            />
+          </div>
         </Draggable>
       </div>
     )
