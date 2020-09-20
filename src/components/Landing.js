@@ -19,6 +19,7 @@ import ipfsLogo from '../ipfs.png'
 import fleekLogo from '../fleek-logo.png'
 import logo from '../logo.svg'
 import meeting from '../meeting.jpg'
+import ReactGA from 'react-ga';
 
 const theme = createMuiTheme({
   typography: {
@@ -75,6 +76,8 @@ const useStyles = makeStyles((theme) => ({
 
 function Landing() {
   const classes = useStyles()
+  ReactGA.initialize('UA-177909748-1');
+  ReactGA.pageview(window.location.pathname + window.location.search);
   return (
     <div className="App">
       <header className="App-header">

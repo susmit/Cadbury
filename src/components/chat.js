@@ -4,14 +4,24 @@ import Collapse from '@material-ui/core/Collapse'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Switch from '@material-ui/core/Switch'
 import DragDrop from './dragDrop'
+import { makeStyles } from '@material-ui/core/styles';
+
+const useStyles = makeStyles((theme) => ({
+  root: {
+    '& > *': {
+      margin: theme.spacing(1),
+      width: '350',
+    },
+  },
+}));
 
 const Chat = (props) => {
   const [message, setMessage] = useState('')
   const [user, setUser] = useState({ uid: 0 })
   const [imageZoom, setImageZoom] = useState(false)
   const [selectedImage, setSelectedImage] = useState('')
-
   const [checked, setChecked] = React.useState(true)
+  const classes = useStyles();
 
   const handleChangeSwitch = () => {
     setChecked((prev) => !prev)
@@ -55,7 +65,7 @@ const Chat = (props) => {
 
     const msgDiv = (data.type === 'text' && (
       <div className="msg">
-        <p>{message.sender.uid}</p>
+        <p>Peer ({message.sender.uid.slice(24, -1)}) </p>
         <div className="message"> {message.data.text}</div>
       </div>
     )) || (
@@ -126,6 +136,7 @@ const Chat = (props) => {
       </div>
       <Collapse in={checked}>
         <div
+        
           className="chatWindow"
           style={{
             zIndex: 1,
@@ -143,11 +154,18 @@ const Chat = (props) => {
             style={{
               background: '#9C7E46',
               height: 40,
+              width: 340,
               padding: 5,
             }}
           >
             Chat Section
           </div>
+
+          <div style={{
+                width: 350,
+                height: 600,
+                borderRadius: 10,
+              }} >
 
           <ul className="chat" id="chatList">
             {props.messages.map((data) => (
@@ -158,6 +176,8 @@ const Chat = (props) => {
               </div>
             ))}
           </ul>
+          </div>
+
           <DragDrop
             className="chatInputWrapper"
             sendFiles={(files) => {
@@ -180,19 +200,21 @@ const Chat = (props) => {
             }}
           >
             <div
-              className="inputChat"
               style={{
                 position: 'absolute',
-                bottom: '0px',
+                bottom: '100px',
                 width: 350,
+                height:10,
                 borderRadius: 10,
               }}
             >
-              <form onSubmit={handleSubmit}>
+              <form className={classes.root}  noValidate autoComplete="off" onSubmit={handleSubmit}>
                 <TextField
-                  className="textarea input"
-                  type="text"
-                  placeholder="Enter Msg/Drop Img"
+                  id="filled-basic"
+                  variant="filled"
+                  label="Enter Msg/Drop Img"
+                  fullWidth
+                  color="white"
                   onChange={handleChange}
                   value={message}
                 />

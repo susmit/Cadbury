@@ -101,4 +101,10 @@ input[type=text] {
     color: darkgray;
 }
 
-
+.chatWindow {
+  display: flex;
+  flex-flow: column wrap;
+  flex-direction: column;
+  align-content: flex-start;
+  flex-wrap: wrap;
+}

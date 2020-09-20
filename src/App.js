@@ -8,8 +8,6 @@ import Landing from './components/Landing'
 import NotAvailable from './components/NotAvailable'
 
 function App() {
-  ReactGA.initialize('UA-177909748-1');
-  ReactGA.pageview(window.location.pathname + window.location.search);
   return (
     <Switch>
       <Route exact path="/home" component={HomeC} />
