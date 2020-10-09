@@ -11,6 +11,7 @@ import Paper from '@material-ui/core/Paper'
 import Grid from '@material-ui/core/Grid'
 import Box from '@material-ui/core/Box'
 import Typography from '@material-ui/core/Typography'
+import ReactGA from 'react-ga'
 import pinataL from '../pinata.png'
 import textileLogo from '../textile.png'
 import libp2pL from '../libp2p.png'
@@ -19,7 +20,6 @@ import ipfsLogo from '../ipfs.png'
 import fleekLogo from '../fleek-logo.png'
 import logo from '../logo.svg'
 import meeting from '../meeting.jpg'
-import ReactGA from 'react-ga'
 
 const theme = createMuiTheme({
   typography: {

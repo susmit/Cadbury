@@ -3,8 +3,8 @@ import TextField from '@material-ui/core/TextField'
 import Collapse from '@material-ui/core/Collapse'
 import FormControlLabel from '@material-ui/core/FormControlLabel'
 import Switch from '@material-ui/core/Switch'
-import DragDrop from './dragDrop'
 import { makeStyles } from '@material-ui/core/styles'
+import DragDrop from './dragDrop'
 
 const useStyles = makeStyles((theme) => ({
   root: {

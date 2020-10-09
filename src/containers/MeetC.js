@@ -81,27 +81,30 @@ class MeetC extends Component {
   }
 
   startRecord = async () => {
-
-
-    if (this.state.recordingStatus === null || this.state.recordingStatus === 'Recording Stopped' ) {
-      console.log("Recording Started")
+    if (
+      this.state.recordingStatus === null ||
+      this.state.recordingStatus === 'Recording Stopped'
+    ) {
+      console.log('Recording Started')
       //   recorder = new RecordRTCPromisesHandler([...this.state.remoteStreams,this.state.localStream], {
       //     mimeType: 'video/webm',
       // });
-      if(this.state.remoteStream === null){
+      if (this.state.remoteStream === null) {
         recorder = new RecordRTCPromisesHandler([this.state.localStream], {
           mimeType: 'video/webm',
-      });
-      }else{
-        recorder = new RecordRTCPromisesHandler([this.state.localStream , this.state.remoteStream], {
-          mimeType: 'video/webm',
-      });
+        })
+      } else {
+        recorder = new RecordRTCPromisesHandler(
+          [this.state.localStream, this.state.remoteStream],
+          {
+            mimeType: 'video/webm',
+          },
+        )
       }
-      
-        recorder.startRecording();
+      recorder.startRecording()
     } else {
-      console.log("Recording Resumed")
-      await recorder.resumeRecording();
+      console.log('Recording Resumed')
+      await recorder.resumeRecording()
     }
 
     this.setState({
@@ -110,27 +113,27 @@ class MeetC extends Component {
   }
 
   pauseRecord = async () => {
-    console.log("Recording Paused")
+    console.log('Recording Paused')
     this.setState({
       recordingStatus: 'Recording Paused',
     })
-    await recorder.pauseRecording();
+    await recorder.pauseRecording()
   }
 
-
-
   stopRecord = async () => {
-    console.log("Recording Stopped")
-    await recorder.stopRecording();
+    console.log('Recording Stopped')
+    await recorder.stopRecording()
     this.setState({
       recordingStatus: 'Recording Stopped',
     })
-    let blob = await recorder.getBlob();
-    invokeSaveAsDialog(blob,'cadbury-record.webm');
+    let blob = await recorder.getBlob()
+    invokeSaveAsDialog(blob, 'cadbury-record.webm')
   }
 
   handleFFS = async () => {
-    await this.stopRecord()
+    if (this.state.recordingStatus !== null) {
+      this.stopRecord()
+    }
     if (!window.ethereum || !window.ethereum.isMetaMask) {
       alert(
         'Please install an Ethereum-compatible browser or extension like MetaMask to use this dApp!',
@@ -172,6 +175,7 @@ class MeetC extends Component {
       console.log('user token generated,saved in 3box and pow set')
       console.log(createResp.token)
       box.logout()
+      alert('try again')
     } else {
       console.log('user has FFS token')
       if (!this.state.powergateStatus) {
@@ -673,7 +677,7 @@ class MeetC extends Component {
           </div>
           <i
             onClick={(e) => {
-              if(this.state.recordingStatus !== null){
+              if (this.state.recordingStatus !== null) {
                 this.stopRecord()
               }
               this.setState({ disconnected: true })
