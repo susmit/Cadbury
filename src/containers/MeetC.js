@@ -15,16 +15,28 @@ import Badge from '@material-ui/core/Badge'
 import Typography from '@material-ui/core/Typography'
 import { createPow } from '@textile/powergate-client'
 import FileCopyIcon from '@material-ui/icons/FileCopy'
+import PlayForWorkIcon from '@material-ui/icons/PlayForWork';
+import PlayArrowIcon from '@material-ui/icons/PlayArrow';
+import SaveAltIcon from '@material-ui/icons/SaveAlt';
+import PauseIcon from '@material-ui/icons/Pause';
+
+import {RecordRTCPromisesHandler, invokeSaveAsDialog} from 'recordrtc';
 
 const Box = require('3box')
 const Web3 = require('web3')
-const host = 'http://0.0.0.0:6002'
+const host = 'https://webapi.pow.cadbury.textile.io'
 
 const useStyles = makeStyles({
   root: {
     width: 500,
   },
 })
+
+let recorder;
+
+//97aa579e-92c4-4f1a-a9f1-521ae26f4dbe  id 8a8c9644-8e7e-45ec-a704-eb6b7c906f86
+// > Success! Staged asset in FFS hot storage with cid: QmWkkcMJLKV9TdsHjtPiuJwYSR43JaEsHVAGYqc4Jg4fm7
+// cli > Instance created with id 9c980d48-cabc-4241-9775-7c72629d842f and token b82e3869-4a3a-4bde-912e-6ea055723d11
 
 class MeetC extends Component {
   constructor(props) {
@@ -59,6 +71,8 @@ class MeetC extends Component {
 
       listenAddr: '',
       powergateStatus: false,
+      recordingStatus : null,
+      isRecord: true
     }
 
     this.serviceIP = 'https://meet-cadbury.herokuapp.com/webrtcPeer'
@@ -66,7 +80,29 @@ class MeetC extends Component {
     this.pow = createPow({ host })
   }
 
+  startRecord = async () => {
+  //   recorder = new RecordRTCPromisesHandler([...this.state.remoteStreams,this.state.localStream], {
+  //     mimeType: 'video/webm', 
+  // });
+
+  //   recorder.startRecording();
+    this.setState({
+      recordingStatus: "Recording On ...",
+    })
+
+  }
+
+  stopRecord = async() => {
+    //await recorder.stopRecording();
+    this.setState({
+      recordingStatus: "Recording Paused",
+    })
+    // let blob = await recorder.getBlob();
+    // invokeSaveAsDialog(blob,'cadbury-record.webm');
+  }
+
   handleFFS = async () => {
+
     if (!window.ethereum || !window.ethereum.isMetaMask) {
       alert(
         'Please install an Ethereum-compatible browser or extension like MetaMask to use this dApp!',
@@ -124,14 +160,12 @@ class MeetC extends Component {
       }
       this.pow.setToken(ffsToken)
       const info = await this.pow.ffs.info()
-      console.log(info.info)
+      console.log(JSON.stringify(info.info))
       await box.logout()
-      alert(
-        'Textile Powergate offline ' +
-          host +
+      alert(this.state.listenAddr +
           '\nUser Powergate FFS token:- ' +
           ffsToken +
-          '\nUser Address ' +
+          '\nUser Address:- ' +
           accounts[0],
       )
     }
@@ -164,6 +198,7 @@ class MeetC extends Component {
       console.log(e)
     }
   }
+
 
   getLocalStream = () => {
     const success = (stream) => {
@@ -594,7 +629,15 @@ class MeetC extends Component {
               borderRadius: 5,
             }}
           >
-            <Typography>{this.state.listenAddr}</Typography>
+            <Typography>{(this.state.powergateStatus)? "Textile Powergate :- Online": "Textile Pwergate :- Offline" }</Typography>
+          </div>
+          <div
+            style={{
+              padding: 10,
+              borderRadius: 5,
+            }}
+          >
+          <Typography>{this.state.recordingStatus} </Typography>
           </div>
           <i
             onClick={(e) => {
@@ -621,13 +664,39 @@ class MeetC extends Component {
           <Fab
             color="primary"
             onClick={() => {
+              //console.log('Recording meeting')
+              this.setState({
+                isRecord: !this.state.isRecord
+                })
+              if(this.state.isRecord){
+                this.startRecord()
+              }else{
+                this.stopRecord()
+              }
+            }}
+            aria-label="Call End"
+          > {this.state.isRecord ? <PlayArrowIcon /> : <PauseIcon />  }
+          </Fab>
+          <i
+            style={{
+              cursor: 'pointer',
+              paddingLeft: 10,
+              color: 'red',
+              paddingRight: 10,
+            }}
+            className="material-icons"
+          >
+          <Fab
+            color="primary"
+            onClick={() => {
               console.log('FFS initiated')
               this.handleFFS()
             }}
             aria-label="Call End"
           >
-            <FileCopyIcon />
+            <SaveAltIcon />
           </Fab>
+          </i>
         </div>
         <div>
           <Videos
