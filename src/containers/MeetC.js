@@ -86,10 +86,22 @@ class MeetC extends Component {
   // });
 
   //   recorder.startRecording();
+
+  if(this.state.recordingStatus === "Recording On ..."){
+    //await recorder.resumeRecording();
+  }
+  else{
+    
+  }
+
     this.setState({
       recordingStatus: "Recording On ...",
     })
 
+  }
+
+  pauseRecord = async () => {
+    //await recorder.pauseRecording();
   }
 
   stopRecord = async() => {
