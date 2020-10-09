@@ -15,12 +15,12 @@ import Badge from '@material-ui/core/Badge'
 import Typography from '@material-ui/core/Typography'
 import { createPow } from '@textile/powergate-client'
 import FileCopyIcon from '@material-ui/icons/FileCopy'
-import PlayForWorkIcon from '@material-ui/icons/PlayForWork';
-import PlayArrowIcon from '@material-ui/icons/PlayArrow';
-import SaveAltIcon from '@material-ui/icons/SaveAlt';
-import PauseIcon from '@material-ui/icons/Pause';
+import PlayForWorkIcon from '@material-ui/icons/PlayForWork'
+import PlayArrowIcon from '@material-ui/icons/PlayArrow'
+import SaveAltIcon from '@material-ui/icons/SaveAlt'
+import PauseIcon from '@material-ui/icons/Pause'
 
-import {RecordRTCPromisesHandler, invokeSaveAsDialog} from 'recordrtc';
+import { RecordRTCPromisesHandler, invokeSaveAsDialog } from 'recordrtc'
 
 const Box = require('3box')
 const Web3 = require('web3')
@@ -32,7 +32,7 @@ const useStyles = makeStyles({
   },
 })
 
-let recorder;
+let recorder
 
 //97aa579e-92c4-4f1a-a9f1-521ae26f4dbe  id 8a8c9644-8e7e-45ec-a704-eb6b7c906f86
 // > Success! Staged asset in FFS hot storage with cid: QmWkkcMJLKV9TdsHjtPiuJwYSR43JaEsHVAGYqc4Jg4fm7
@@ -71,8 +71,8 @@ class MeetC extends Component {
 
       listenAddr: '',
       powergateStatus: false,
-      recordingStatus : null,
-      isRecord: true
+      recordingStatus: null,
+      isRecord: true,
     }
 
     this.serviceIP = 'https://meet-cadbury.herokuapp.com/webrtcPeer'
@@ -81,40 +81,56 @@ class MeetC extends Component {
   }
 
   startRecord = async () => {
-  //   recorder = new RecordRTCPromisesHandler([...this.state.remoteStreams,this.state.localStream], {
-  //     mimeType: 'video/webm', 
-  // });
 
-  //   recorder.startRecording();
 
-  if(this.state.recordingStatus === "Recording On ..."){
-    //await recorder.resumeRecording();
-  }
-  else{
-    
-  }
+    if (this.state.recordingStatus === null || this.state.recordingStatus === 'Recording Stopped' ) {
+      console.log("Recording Started")
+      //   recorder = new RecordRTCPromisesHandler([...this.state.remoteStreams,this.state.localStream], {
+      //     mimeType: 'video/webm',
+      // });
+      if(this.state.remoteStream === null){
+        recorder = new RecordRTCPromisesHandler([this.state.localStream], {
+          mimeType: 'video/webm',
+      });
+      }else{
+        recorder = new RecordRTCPromisesHandler([this.state.localStream , this.state.remoteStream], {
+          mimeType: 'video/webm',
+      });
+      }
+      
+        recorder.startRecording();
+    } else {
+      console.log("Recording Resumed")
+      await recorder.resumeRecording();
+    }
 
     this.setState({
-      recordingStatus: "Recording On ...",
+      recordingStatus: 'Recording On ...',
     })
-
   }
 
   pauseRecord = async () => {
-    //await recorder.pauseRecording();
+    console.log("Recording Paused")
+    this.setState({
+      recordingStatus: 'Recording Paused',
+    })
+    await recorder.pauseRecording();
   }
 
-  stopRecord = async() => {
-    //await recorder.stopRecording();
+
+
+  stopRecord = async () => {
+    console.log("Recording Stopped")
+    await recorder.stopRecording();
     this.setState({
-      recordingStatus: "Recording Paused",
+      recordingStatus: 'Recording Stopped',
     })
-    // let blob = await recorder.getBlob();
-    // invokeSaveAsDialog(blob,'cadbury-record.webm');
+    let blob = await recorder.getBlob();
+    invokeSaveAsDialog(blob,'cadbury-record.webm');
   }
 
   handleFFS = async () => {
-
+    await this.stopRecord()
     if (!window.ethereum || !window.ethereum.isMetaMask) {
       alert(
         'Please install an Ethereum-compatible browser or extension like MetaMask to use this dApp!',
@@ -174,7 +190,8 @@ class MeetC extends Component {
       const info = await this.pow.ffs.info()
       console.log(JSON.stringify(info.info))
       await box.logout()
-      alert(this.state.listenAddr +
+      alert(
+        this.state.listenAddr +
           '\nUser Powergate FFS token:- ' +
           ffsToken +
           '\nUser Address:- ' +
@@ -210,7 +227,6 @@ class MeetC extends Component {
       console.log(e)
     }
   }
-
 
   getLocalStream = () => {
     const success = (stream) => {
@@ -553,7 +569,7 @@ class MeetC extends Component {
       return <Disconnected />
     }
 
-    console.log(this.state.localStream)
+    //console.log(this.state.localStream)
 
     const statusText = (
       <div style={{ color: 'white', padding: 0 }}>{this.state.status}</div>
@@ -641,7 +657,11 @@ class MeetC extends Component {
               borderRadius: 5,
             }}
           >
-            <Typography>{(this.state.powergateStatus)? "Textile Powergate :- Online": "Textile Pwergate :- Offline" }</Typography>
+            <Typography>
+              {this.state.powergateStatus
+                ? 'Textile Powergate :- Online'
+                : 'Textile Pwergate :- Offline'}
+            </Typography>
           </div>
           <div
             style={{
@@ -649,10 +669,13 @@ class MeetC extends Component {
               borderRadius: 5,
             }}
           >
-          <Typography>{this.state.recordingStatus} </Typography>
+            <Typography>{this.state.recordingStatus} </Typography>
           </div>
           <i
             onClick={(e) => {
+              if(this.state.recordingStatus !== null){
+                this.stopRecord()
+              }
               this.setState({ disconnected: true })
             }}
             style={{
@@ -678,16 +701,18 @@ class MeetC extends Component {
             onClick={() => {
               //console.log('Recording meeting')
               this.setState({
-                isRecord: !this.state.isRecord
-                })
-              if(this.state.isRecord){
+                isRecord: !this.state.isRecord,
+              })
+              if (this.state.isRecord) {
                 this.startRecord()
-              }else{
-                this.stopRecord()
+              } else {
+                this.pauseRecord()
               }
             }}
             aria-label="Call End"
-          > {this.state.isRecord ? <PlayArrowIcon /> : <PauseIcon />  }
+          >
+            {' '}
+            {this.state.isRecord ? <PlayArrowIcon /> : <PauseIcon />}
           </Fab>
           <i
             style={{
@@ -698,16 +723,16 @@ class MeetC extends Component {
             }}
             className="material-icons"
           >
-          <Fab
-            color="primary"
-            onClick={() => {
-              console.log('FFS initiated')
-              this.handleFFS()
-            }}
-            aria-label="Call End"
-          >
-            <SaveAltIcon />
-          </Fab>
+            <Fab
+              color="primary"
+              onClick={() => {
+                console.log('FFS initiated')
+                this.handleFFS()
+              }}
+              aria-label="Call End"
+            >
+              <SaveAltIcon />
+            </Fab>
           </i>
         </div>
         <div>

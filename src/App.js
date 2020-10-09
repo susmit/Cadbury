@@ -1,6 +1,6 @@
 import React from 'react'
 import './App.css'
-import ReactGA from 'react-ga';
+import ReactGA from 'react-ga'
 import { Route, Switch, Redirect } from 'react-router-dom'
 import MeetC from './containers/MeetC'
 import HomeC from './containers/HomeC'
