@@ -1,7 +1,6 @@
 import React, { Component } from 'react'
 
 import io from 'socket.io-client'
-
 import Video from '../components/video'
 import Videos from '../components/videos'
 import Chat from '../components/chat'
@@ -14,29 +13,56 @@ import PeopleIcon from '@material-ui/icons/People'
 import Badge from '@material-ui/core/Badge'
 import Typography from '@material-ui/core/Typography'
 import { createPow } from '@textile/powergate-client'
-import FileCopyIcon from '@material-ui/icons/FileCopy'
-import PlayForWorkIcon from '@material-ui/icons/PlayForWork'
+import Popover from '@material-ui/core/Popover'
+import DashboardIcon from '@material-ui/icons/Dashboard'
 import PlayArrowIcon from '@material-ui/icons/PlayArrow'
 import SaveAltIcon from '@material-ui/icons/SaveAlt'
 import PauseIcon from '@material-ui/icons/Pause'
+import Dialog from '@material-ui/core/Dialog'
+import DialogActions from '@material-ui/core/DialogActions'
+import DialogContent from '@material-ui/core/DialogContent'
+import DialogContentText from '@material-ui/core/DialogContentText'
+import DialogTitle from '@material-ui/core/DialogTitle'
+import Button from '@material-ui/core/Button'
+import Snackbar from '@material-ui/core/Snackbar';
+import MuiAlert from '@material-ui/lab/Alert';
+import { JobStatus } from "@textile/grpc-powergate-client/dist/ffs/rpc/rpc_pb"
+import CircularProgress from '@material-ui/core/CircularProgress'
+import { green } from '@material-ui/core/colors'
 
 import { RecordRTCPromisesHandler, invokeSaveAsDialog } from 'recordrtc'
-
 const Box = require('3box')
 const Web3 = require('web3')
 const host = 'https://webapi.pow.cadbury.textile.io'
 
-const useStyles = makeStyles({
-  root: {
-    width: 500,
-  },
-})
-
 let recorder
 
-//97aa579e-92c4-4f1a-a9f1-521ae26f4dbe  id 8a8c9644-8e7e-45ec-a704-eb6b7c906f86
-// > Success! Staged asset in FFS hot storage with cid: QmWkkcMJLKV9TdsHjtPiuJwYSR43JaEsHVAGYqc4Jg4fm7
-// cli > Instance created with id 9c980d48-cabc-4241-9775-7c72629d842f and token b82e3869-4a3a-4bde-912e-6ea055723d11
+function Alert(props) {
+  return <MuiAlert elevation={6} variant="filled" {...props} />;
+}
+
+function getFileName(fileExtension) {
+  var d = new Date();
+  var year = d.getUTCFullYear();
+  var month = d.getUTCMonth();
+  var date = d.getUTCDate();
+  return 'Cadbury-' + year + month + date + '-' + getRandomString() + '.' + fileExtension;
+}
+
+
+function getRandomString() {
+  if (window.crypto && window.crypto.getRandomValues && navigator.userAgent.indexOf('Safari') === -1) {
+      var a = window.crypto.getRandomValues(new Uint32Array(3)),
+          token = '';
+      for (var i = 0, l = a.length; i < l; i++) {
+          token += a[i].toString(36);
+      }
+      return token;
+  } else {
+      return (Math.random() * new Date().getTime()).toString(36).replace(/\./g, '');
+  }
+}
+
 
 class MeetC extends Component {
   constructor(props) {
@@ -73,6 +99,17 @@ class MeetC extends Component {
       powergateStatus: false,
       recordingStatus: null,
       isRecord: true,
+      powSetToken: false,
+
+      //download dialog
+      ddialog: false,
+
+      //no download snack
+      noDownloadSnack: false,
+
+      //yes download snack
+      yesDownloadSnack:false,
+
     }
 
     this.serviceIP = 'https://meet-cadbury.herokuapp.com/webrtcPeer'
@@ -80,6 +117,31 @@ class MeetC extends Component {
     this.pow = createPow({ host })
   }
 
+  //no download Snack
+  handleClick = () => {
+    this.setState({ noDownloadSnack: true })
+  };
+
+  //no download snack
+  handleClose = (event, reason) => {
+    if (reason === 'clickaway') {
+      return;
+    }
+
+    this.setState({ noDownloadSnack: false})
+  };
+
+  //download dialog
+  openDialog() {
+    this.setState({ ddialog: true })
+  }
+
+  //download dialog
+  closeDialog() {
+    this.setState({ ddialog: false })
+  }
+
+  //meeting record fc
   startRecord = async () => {
     if (
       this.state.recordingStatus === null ||
@@ -112,6 +174,7 @@ class MeetC extends Component {
     })
   }
 
+  //meeting record fc
   pauseRecord = async () => {
     console.log('Recording Paused')
     this.setState({
@@ -120,6 +183,7 @@ class MeetC extends Component {
     await recorder.pauseRecording()
   }
 
+  //meeting record fc
   stopRecord = async () => {
     console.log('Recording Stopped')
     await recorder.stopRecording()
@@ -127,13 +191,20 @@ class MeetC extends Component {
       recordingStatus: 'Recording Stopped',
     })
     let blob = await recorder.getBlob()
-    invokeSaveAsDialog(blob, 'cadbury-record.webm')
+    var fileName = getFileName('webm');
+    invokeSaveAsDialog(blob, fileName)
   }
 
+  // textile powergate fc //ffs login //time consuming
   handleFFS = async () => {
-    if (this.state.recordingStatus !== null) {
-      this.stopRecord()
+
+    if(this.state.powSetToken){
+      console.log("pow token already set")
+      return ;
+    }else{
+      console.log("pow not set")
     }
+
     if (!window.ethereum || !window.ethereum.isMetaMask) {
       alert(
         'Please install an Ethereum-compatible browser or extension like MetaMask to use this dApp!',
@@ -143,14 +214,21 @@ class MeetC extends Component {
     const web3 = new Web3(Web3.givenProvider)
     const accounts = await web3.eth.getAccounts()
     console.log(accounts[0])
-    if (!Box.isLoggedIn(accounts[0])) {
-      console.log('Not Logged In')
-      // box = await Box.openBox(accounts[0], window.ethereum)
+
+    // if (!Box.isLoggedIn(accounts[0])) {
+    //   console.log('Not Logged In')
+    //   // box = await Box.openBox(accounts[0], window.ethereum)
+    // }
+    let box
+    try {
+      box = await Box.openBox(accounts[0], window.ethereum)
+    } catch (e) {
+      console.log(e)
     }
-    let box = await Box.openBox(accounts[0], window.ethereum)
     await box.syncDone
+    console.log('3box sync done')
     //else {
-    //   console.log('user logged in!')
+    // console.log('user logged in!')
     const ffsToken = await box.private.get('ffsToken')
     console.log(ffsToken)
     if (typeof ffsToken === 'undefined' || !ffsToken) {
@@ -172,6 +250,9 @@ class MeetC extends Component {
       //user.ffsToken = createResp.token
       //await save(user)
       this.pow.setToken(createResp.token)
+      this.setState({
+        powSetToken: true,
+      })
       console.log('user token generated,saved in 3box and pow set')
       console.log(createResp.token)
       box.logout()
@@ -191,33 +272,35 @@ class MeetC extends Component {
         return
       }
       this.pow.setToken(ffsToken)
-      const info = await this.pow.ffs.info()
-      console.log(JSON.stringify(info.info))
+      this.setState({
+        powSetToken: true,
+      })
+      // const info = await this.pow.ffs.info()
+      // console.log(JSON.stringify(info.info))
       await box.logout()
-      alert(
-        this.state.listenAddr +
-          '\nUser Powergate FFS token:- ' +
-          ffsToken +
-          '\nUser Address:- ' +
-          accounts[0],
-      )
+      // alert(
+      //   this.state.listenAddr +
+      //     '\nUser Powergate FFS token:- ' +
+      //     ffsToken +
+      //     '\nUser Address:- ' +
+      //     accounts[0],
+      // )
     }
 
     //const box = await Box.openBox(0x234..., window.ethereum)
   }
 
+  //textile powergate fc
   getPowergateStatus = async () => {
     try {
-      const [respPeers, respAddr, respHealth, respMiners] = await Promise.all([
-        this.pow.net.peers(),
+      const [respAddr, respHealth] = await Promise.all([
         this.pow.net.listenAddr(),
         this.pow.health.check(),
-        this.pow.miners.get(),
       ])
-      console.log('powergate ' + JSON.stringify(respPeers.peersList))
+      //console.log('powergate ' + JSON.stringify(respPeers.peersList))
       console.log('powergate ' + JSON.stringify(respAddr.addrInfo))
       console.log('powergate ' + JSON.stringify(respHealth))
-      console.log('powergate ' + JSON.stringify(respMiners.index))
+      //console.log('powergate ' + JSON.stringify(respMiners.index))
       this.setState({
         listenAddr: 'Textile Powergate:- ' + respAddr.addrInfo.id,
         powergateStatus: true,
@@ -232,6 +315,160 @@ class MeetC extends Component {
     }
   }
 
+  //textile powergarte fc
+  getFFSAddrs = async () => {
+    const { addrsList } = await this.pow.ffs.addrs()
+    console.log(addrsList)
+    //set state
+  }
+
+  //textile powergate fc
+  createWalletAddr = () => async () => {
+    const { addr } = await this.pow.ffs.newAddr("Cadbury-Filecoin", "bls", false);}
+
+  //textile powergate fc
+  getFFSInfo = async () => {
+    const { info } = await this.pow.ffs.info()
+    console.log(info)
+  }
+
+  //textile powergate fc
+  getDefaultCidConfig = (cid) => async () => {
+    await this.pow.ffs.getDefaultCidConfig(cid)
+  }
+
+  //textile powergate fc
+  setDefaultConfig = (defaultConfig) => async () => {
+    console.log(defaultConfig);
+    await this.pow.ffs.setDefaultConfig(defaultConfig);
+  };
+
+  //textile powergate fc
+  uploadToFFS = async () => {
+
+    console.log("1 ffs filecoin upload initiated")
+
+
+    console.log('Recording Stopped')
+    await recorder.stopRecording()
+    this.setState({
+      recordingStatus: 'Recording Stopped',
+    })
+    let blob = await recorder.getBlob()
+
+     // generating a random file name
+     var fileName = getFileName('webm');
+
+     // we need to upload "File" --- not "Blob"
+     var fileObject = new File([blob], fileName, {
+         type: 'video/webm'
+     });
+
+     var arrayBuffer, uint8Array;
+     var fileReader = new FileReader();
+     fileReader.readAsArrayBuffer(fileObject);
+
+     fileReader.onload = async () => {
+      arrayBuffer = this.result;
+      uint8Array = new Uint8Array(arrayBuffer);
+           // cache data in IPFS in preparation to store it using FFS
+      //const buffer = "fs.readFileSync(`path/to/a/file`)"
+      const { cid } = await this.pow.ffs.stage(uint8Array)
+
+      console.log("2 uploaded to IPFS")
+      console.log(cid)
+
+
+      // store the data in FFS using the default storage configuration
+      const { jobId } = await this.pow.ffs.pushStorageConfig(cid)
+
+      console.log("3 Pushed to filecoin network bia ffs cold")
+      console.log(jobId)
+    }
+
+
+    // const jobsCancel = this.pow.ffs.watchJobs((job) => {
+    //   if (job.status === JobStatus.JOB_STATUS_CANCELED) {
+    //     console.log("job canceled")
+    //   } else if (job.status === JobStatus.JOB_STATUS_FAILED) {
+    //     console.log("job failed")
+    //   } else if (job.status === JobStatus.JOB_STATUS_SUCCESS) {
+    //     console.log("job success!")
+    //   }
+    // }, jobId)
+  
+
+    // // watch all FFS events for a cid
+    // const logsCancel = this.pow.ffs.watchLogs((logEvent) => {
+    //   console.log(`received event for cid ${logEvent.cid}`)
+    // }, cid)
+
+  
+
+  };
+  
+  //textile powergate fc
+  getCidConfig = (payload) => async (dispatch) => {
+    const { config } = await this.pow.ffs.getCidConfig(payload.cid);
+    console.log({ getCidConfig: config });
+    // dispatch({
+    //   type: types.GET_CID_CONFIG,
+    //   payload: {
+    //     cid: payload.cid,
+    //     desiredConfig: config,
+    //   },
+    // });
+  };
+  
+  //textile powergate fc
+  getActualCidConfig = (payload) => async (dispatch) => {
+    const { cidInfo } = await this.pow.ffs.show(payload.cid);
+    console.log({ getActualCidConfig: cidInfo });
+    // dispatch({
+    //   type: types.GET_ACTUAL_CID_CONFIG,
+    //   payload: {
+    //     cid: payload.cid,
+    //     cidInfo: cidInfo,
+    //   },
+    // });
+  };
+  
+  //textile powergate fc
+  getDataFromFFS = (payload) => async (dispatch) => {
+    const bytes = await this.pow.ffs.get(payload.cid);
+    console.log(bytes);
+  
+    let blob = new Blob([bytes], { type: "octet/stream" });
+    let url = window.URL.createObjectURL(blob);
+  
+    // dispatch({
+    //   type: types.GET_DATA_FROM_FFS,
+    //   payload: {
+    //     cid: payload.cid,
+    //     url: url,
+    //   },
+    // });
+  };
+  
+  //textile powergate fc
+  sendFIL = (payload) => async (dispatch) => {
+    await this.pow.ffs.sendFil(
+      payload.addrsList[0].addr,
+      "<some other address>",
+      1000
+    );
+    // dispatch({
+    //   type: types.GET_DATA_FROM_FFS,
+    //   payload: {
+    //     from: payload.addrsList[0].addr,
+    //     to: "<some other address>",
+    //     amount: 1000,
+    //   },
+    // });
+  };
+
+
+  // webrtc 
   getLocalStream = () => {
     const success = (stream) => {
       window.localStream = stream
@@ -730,14 +967,97 @@ class MeetC extends Component {
             <Fab
               color="primary"
               onClick={() => {
-                console.log('FFS initiated')
-                this.handleFFS()
+                console.log('download dialog initiated')
+                this.openDialog()
               }}
               aria-label="Call End"
             >
               <SaveAltIcon />
             </Fab>
+            <Dialog
+              open={this.state.ddialog}
+              onClose={() => {
+                this.closeDialog()
+              }}
+              aria-labelledby="alert-dialog-title"
+              aria-describedby="alert-dialog-description"
+            >
+              <DialogTitle id="alert-dialog-title">
+                {'Use Cadbury storage service?'}
+              </DialogTitle>
+              <DialogContent>
+                <DialogContentText id="alert-dialog-description">
+                  With Cadbury storage service you can upload recorded meeting
+                  to FILECOIN NETWORK or IPFS within single click. Recorded
+                  meeting can also be downloaded as per your convenience.
+                </DialogContentText>
+              </DialogContent>
+              <DialogActions>
+                <Button
+                  onClick={() => {
+                    if (this.state.recordingStatus !== null) {
+                      this.stopRecord()
+                      this.closeDialog()
+                    }
+                    //this.closeDialog()
+                    //for no download snack
+                    this.handleClick()
+                  }}
+                  color="primary"
+                >
+                  Download
+                </Button>
+                <Snackbar open={this.state.noDownloadSnack} autoHideDuration={3000} onClose={()=>this.handleClose()}>
+                    <Alert onClose={()=>this.handleClose()} severity="warning">
+                      No meeting recording found !
+                    </Alert>
+                  </Snackbar>
+                {/* <Button
+                  onClick={() => {
+    
+                      this.closeDialog()
+          
+                  }}
+                  color="primary"
+                >
+                  Ipfs
+                </Button> */}
+                <Button
+                  onClick={async () => {
+
+                    if (this.state.recordingStatus !== null) {
+                      // stop recording logic
+                      await this.handleFFS()
+                      await this.uploadToFFS()
+                      await this.closeDialog()
+                    }
+                     // no meeting recording foung
+                      //this.closeDialog()
+                      //for no download snack
+                    this.handleClick()
+           
+                  }}
+                  color="primary"
+                  autoFocus
+                >
+                  Filecloud
+                </Button>
+              </DialogActions>
+            </Dialog>
           </i>
+          <Fab
+            color="primary"
+            onClick={async () => {
+              console.log('FFS info initiated')
+              await this.handleFFS()
+              await this.getFFSInfo()
+              await this.getFFSAddrs()
+              //this.handleFFS()
+            }}
+            aria-label="Call End"
+          >
+            <DashboardIcon />
+          </Fab>
         </div>
         <div>
           <Videos
