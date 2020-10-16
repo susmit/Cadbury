@@ -8,9 +8,16 @@ import DragDrop from './dragDrop'
 
 const useStyles = makeStyles((theme) => ({
   root: {
+    //padding: '6px 2px',
+    display: 'flex',
+    alignItems: 'center',
+    width: 300,
+    background: '#CBB386',
+    borderRadius: 10,
+    paddingTop: 10,
     '& > *': {
       margin: theme.spacing(1),
-      width: '350',
+      // width: '310',
     },
   },
 }))
@@ -20,7 +27,7 @@ const Chat = (props) => {
   const [user, setUser] = useState({ uid: 0 })
   const [imageZoom, setImageZoom] = useState(false)
   const [selectedImage, setSelectedImage] = useState('')
-  const [checked, setChecked] = React.useState(true)
+  const [checked, setChecked] = React.useState(false)
   const classes = useStyles()
 
   const handleChangeSwitch = () => {
@@ -116,15 +123,13 @@ const Chat = (props) => {
         style={{
           zIndex: 1,
           position: 'fixed',
-          background: '#9C7E46',
-          right: 350,
+          // background: '#9C7E46',
+          right: 30,
           height: 40,
-          padding: 5,
         }}
       >
         <FormControlLabel
           labelPlacement="start"
-          label="Chat"
           control={
             <Switch
               checked={checked}
@@ -134,8 +139,8 @@ const Chat = (props) => {
           }
         />
       </div>
-      <Collapse in={checked}>
-        <div
+      {/* <Collapse in={checked}> */}
+      {/* <div
           className="chatWindow"
           style={{
             zIndex: 1,
@@ -147,86 +152,81 @@ const Chat = (props) => {
             background: '#CBB386',
             height: 650,
           }}
+        > */}
+      <div
+        className="chatHeader"
+        style={{
+          background: '#9C7E46',
+          height: 40,
+          width: 300,
+          borderRadius: 10,
+          justifyContent: 'center',
+        }}
+      >
+        <div>Chat</div>
+      </div>
+      <Collapse in={checked}>
+        <div
+          style={{
+            width: 300,
+            height: 400,
+            borderRadius: 10,
+            background: '#CBB386',
+          }}
         >
-          <div
-            className="chatHeader"
-            style={{
-              background: '#9C7E46',
-              height: 40,
-              width: 340,
-              padding: 5,
-            }}
-          >
-            Chat Section
-          </div>
-
-          <div
-            style={{
-              width: 350,
-              height: 600,
-              borderRadius: 10,
-            }}
-          >
-            <ul className="chat" id="chatList">
-              {props.messages.map((data) => (
-                <div key={data.id}>
-                  {user.uid === data.message.sender.uid
-                    ? renderMessage('self', data)
-                    : renderMessage('other', data)}
-                </div>
-              ))}
-            </ul>
-          </div>
-
-          <DragDrop
-            className="chatInputWrapper"
-            sendFiles={(files) => {
-              const reader = new FileReader()
-              reader.onload = (e) => {
-                const maximumMessageSize = 262118
-                if (e.target.result.length <= maximumMessageSize)
-                  sendMessage({
-                    type: 'image',
-                    message: {
-                      id: user.uid,
-                      sender: { uid: user.uid },
-                      data: e.target.result,
-                    },
-                  })
-                else alert('Message exceeds Maximum Message Size!')
-              }
-
-              reader.readAsDataURL(files[0])
-            }}
-          >
-            <div
-              style={{
-                position: 'absolute',
-                bottom: '100px',
-                width: 350,
-                height: 10,
-                borderRadius: 10,
-              }}
-            >
-              <form
-                className={classes.root}
-                noValidate
-                autoComplete="off"
-                onSubmit={handleSubmit}
-              >
-                <TextField
-                  id="filled-basic"
-                  variant="filled"
-                  label="Enter Msg/Drop Img"
-                  fullWidth
-                  color="white"
-                  onChange={handleChange}
-                  value={message}
-                />
-              </form>
-            </div>
-          </DragDrop>
+          <ul className="chat" id="chatList">
+            {props.messages.map((data) => (
+              <div key={data.id}>
+                {user.uid === data.message.sender.uid
+                  ? renderMessage('self', data)
+                  : renderMessage('other', data)}
+              </div>
+            ))}
+          </ul>
         </div>
+
+        <DragDrop
+          className="chatInputWrapper"
+          sendFiles={(files) => {
+            const reader = new FileReader()
+            reader.onload = (e) => {
+              const maximumMessageSize = 262118
+              if (e.target.result.length <= maximumMessageSize)
+                sendMessage({
+                  type: 'image',
+                  message: {
+                    id: user.uid,
+                    sender: { uid: user.uid },
+                    data: e.target.result,
+                  },
+                })
+              else alert('Message exceeds Maximum Message Size!')
+            }
+
+            reader.readAsDataURL(files[0])
+          }}
+        >
+          <div style={{}}>
+            <form
+              className={classes.root}
+              noValidate
+              autoComplete="off"
+              onSubmit={handleSubmit}
+            >
+              <TextField
+                id="filled-basic"
+                label="Enter Msg/Drop Img"
+                fullWidth
+                size="small"
+                defaultValue="Small"
+                color="white"
+                onChange={handleChange}
+                value={message}
+              />
+            </form>
+          </div>
+        </DragDrop>
+        {/* </div> */}
       </Collapse>
     </div>
   )

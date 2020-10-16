@@ -62,24 +62,19 @@
 
 .chatHeader{
     text-align: center;
-    padding: 20;
-    justify-content: flex-start;
+    justify-content: center;
     color: white;
     font-size: 20px;
-    border-bottom-left-radius: 8px
+    border-radius: 8px
 }
 
 .chatHeaders{
   text-align: center;
-  padding: 20;
-  justify-content: flex-start;
+  justify-content: center;
   color: white;
   font-size: 20px;
 }
 
-.chatWindow{
-    border-radius: 10px
-}
 
 /* jhgvjhgv */
 input[type=text] {

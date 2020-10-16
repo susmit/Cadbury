@@ -25,6 +25,12 @@ import DialogTitle from '@material-ui/core/DialogTitle'
 import Button from '@material-ui/core/Button'
 import Snackbar from '@material-ui/core/Snackbar';
 import MuiAlert from '@material-ui/lab/Alert';
+import {
+  BrowserView,
+  MobileView,
+  isBrowser,
+  isMobile
+} from "react-device-detect";
 import { JobStatus } from "@textile/grpc-powergate-client/dist/ffs/rpc/rpc_pb"
 import CircularProgress from '@material-ui/core/CircularProgress'
 import { green } from '@material-ui/core/colors'
@@ -817,20 +823,20 @@ class MeetC extends Component {
 
     return (
       <div>
-        <Draggable>
+        {/* <Draggable> */}
           <div
             style={{
-              zIndex: 101,
+              zIndex: 100,
               position: 'absolute',
               left: 0,
-              top: 250,
-              cursor: 'move',
-              padding: 30,
+              bottom: 100,
+              //cursor: 'pointer',
+              //padding: 30,
             }}
           >
             <Video
               videoStyles={{
-                width: 300,
+                width: 200,
               }}
               frameStyle={{
                 width: 200,
@@ -844,7 +850,7 @@ class MeetC extends Component {
               muted
             ></Video>
           </div>
-        </Draggable>
+        {/* </Draggable> */}
         <Video
           videoStyles={{
             zIndex: 1,
@@ -900,7 +906,7 @@ class MeetC extends Component {
             <Typography>
               {this.state.powergateStatus
                 ? 'Textile Powergate :- Online'
-                : 'Textile Pwergate :- Offline'}
+                : 'Textile Powergate :- Offline'}
             </Typography>
           </div>
           <div
@@ -1066,14 +1072,14 @@ class MeetC extends Component {
         </div>
         <br />
 
-        <Draggable>
+        {/* <Draggable> */}
           <div
             style={{
               zIndex: 100,
               position: 'absolute',
               right: 0,
               cursor: 'move',
-              top: 0,
+              top: 1,
             }}
           >
             <Chat
@@ -1095,7 +1101,7 @@ class MeetC extends Component {
               }}
             />
           </div>
-        </Draggable>
+        {/* </Draggable> */}
       </div>
     )
   }

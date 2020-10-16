@@ -5,7 +5,7 @@ import Button from '@material-ui/core/Button'
 import {
   makeStyles,
   createMuiTheme,
- responsiveFontSizes,
+  responsiveFontSizes,
   ThemeProvider,
 } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
@@ -39,7 +39,7 @@ let theme = createMuiTheme({
   },
 })
 
-theme = responsiveFontSizes(theme);
+theme = responsiveFontSizes(theme)
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -86,7 +86,6 @@ function Landing() {
       <header className="App-header">
         <div className="column">
           <div id="topleft">
-          
             <Typography variant="h5" className={classes.gtext}>
               🍫 Cadbury Meet
             </Typography>
@@ -100,7 +99,7 @@ function Landing() {
                   alignItems="center"
                   // style={{ height: '428px', width: '700px' }}
                 > */}
-                  <div className="column" justify="center">
+                <div className="column" justify="center">
                   <ThemeProvider theme={theme}>
                     <Typography variant="h3" className={classes.gtext}>
                       Premium video meetings
@@ -117,48 +116,44 @@ function Landing() {
                       bordorless, decentralized and censorship resistance for
                       all
                     </Typography>
-                    </ThemeProvider>
-                    <br></br>
-                    <div className="row" justify="center">
-                      <img
-                        src={ipfsLogo}
-                        className="Fleek-logo"
-                        alt="fleek-logo"
-                      />
-                      <img
-                        src={libp2pL}
-                        className="Fleek-logo"
-                        alt="fleek-logo"
-                      />
-                      <img
-                        src={ethLogo}
-                        className="eth-logo"
-                        alt="fleek-logo"
-                      />
-                      <img src={logo} className="App-logo" alt="logo" />
-                      <img
-                        src={pinataL}
-                        className="Fleek-logo"
-                        alt="fleek-logo"
-                      />
-                      <img
-                        src={textileLogo}
-                        className="Fleek-logo"
-                        alt="fleek-logo"
-                      />
-                      <img
-                        src={fleekLogo}
-                        className="Fleek-logo"
-                        alt="fleek-logo"
-                      />
-                    </div>
-                    <br></br>
-                    <Link to="/home" style={{ textDecoration: 'none' }}>
-                      <Button variant="contained" className={classes.butt}>
-                        <Typography>Start</Typography>
-                      </Button>
-                    </Link>
+                  </ThemeProvider>
+                  <br></br>
+                  <div className="row" justify="center">
+                    <img
+                      src={ipfsLogo}
+                      className="Fleek-logo"
+                      alt="fleek-logo"
+                    />
+                    <img
+                      src={libp2pL}
+                      className="Fleek-logo"
+                      alt="fleek-logo"
+                    />
+                    <img src={ethLogo} className="eth-logo" alt="fleek-logo" />
+                    <img src={logo} className="App-logo" alt="logo" />
+                    <img
+                      src={pinataL}
+                      className="Fleek-logo"
+                      alt="fleek-logo"
+                    />
+                    <img
+                      src={textileLogo}
+                      className="Fleek-logo"
+                      alt="fleek-logo"
+                    />
+                    <img
+                      src={fleekLogo}
+                      className="Fleek-logo"
+                      alt="fleek-logo"
+                    />
                   </div>
+                  <br></br>
+                  <Link to="/home" style={{ textDecoration: 'none' }}>
+                    <Button variant="contained" className={classes.butt}>
+                      <Typography>Start</Typography>
+                    </Button>
+                  </Link>
+                </div>
                 {/* </Box> */}
               </Grid>
               {/* <Grid item xs>
