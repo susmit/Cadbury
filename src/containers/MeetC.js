@@ -1,5 +1,4 @@
 import React, { Component } from 'react'
-
 import io from 'socket.io-client'
 import Video from '../components/video'
 import Videos from '../components/videos'

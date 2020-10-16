@@ -5,6 +5,7 @@ import Button from '@material-ui/core/Button'
 import {
   makeStyles,
   createMuiTheme,
+ responsiveFontSizes,
   ThemeProvider,
 } from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
@@ -21,7 +22,7 @@ import fleekLogo from '../fleek-logo.png'
 import logo from '../logo.svg'
 import meeting from '../meeting.jpg'
 
-const theme = createMuiTheme({
+let theme = createMuiTheme({
   typography: {
     fontFamily: [
       '-apple-system',
@@ -37,6 +38,8 @@ const theme = createMuiTheme({
     ].join(','),
   },
 })
+
+theme = responsiveFontSizes(theme);
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -83,20 +86,22 @@ function Landing() {
       <header className="App-header">
         <div className="column">
           <div id="topleft">
+          
             <Typography variant="h5" className={classes.gtext}>
               🍫 Cadbury Meet
             </Typography>
           </div>
           <div className={classes.root}>
-            <Grid container spacing={2} alignItems="center" justify="center">
+            <Grid container alignItems="center" justify="center">
               <Grid item xs>
-                <Box
+                {/* <Box
                   display="flex"
                   justifyContent="center"
                   alignItems="center"
-                  style={{ height: '428px', width: '700px' }}
-                >
+                  // style={{ height: '428px', width: '700px' }}
+                > */}
                   <div className="column" justify="center">
+                  <ThemeProvider theme={theme}>
                     <Typography variant="h3" className={classes.gtext}>
                       Premium video meetings
                     </Typography>
@@ -112,6 +117,7 @@ function Landing() {
                       bordorless, decentralized and censorship resistance for
                       all
                     </Typography>
+                    </ThemeProvider>
                     <br></br>
                     <div className="row" justify="center">
                       <img
@@ -153,13 +159,13 @@ function Landing() {
                       </Button>
                     </Link>
                   </div>
-                </Box>
+                {/* </Box> */}
               </Grid>
-              <Grid item xs>
+              {/* <Grid item xs>
                 <Paper className={classes.paper}>
                   <img src={meeting} alt="meet-logo" />
                 </Paper>
-              </Grid>
+              </Grid> */}
             </Grid>
           </div>
         </div>

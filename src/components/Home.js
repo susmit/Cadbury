@@ -89,16 +89,13 @@ function Home(props) {
         </Typography>
       </div>
       <div className={classes.root}>
-        <Grid container spacing={2} alignItems="center" justify="center">
-          <Grid item xs>
-            <div></div>
-          </Grid>
+        <Grid container alignItems="center" justify="center">
           <Grid item xs>
             <Box
               display="flex"
               justifyContent="center"
               alignItems="center"
-              style={{ height: '428px', width: '500px' }}
+              // style={{ height: '428px', width: '500px' }}
             >
               <div className="column" justify="center">
                 <h3>Meeting ready</h3>
