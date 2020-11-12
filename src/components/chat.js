@@ -12,7 +12,7 @@ const useStyles = makeStyles((theme) => ({
     display: 'flex',
     alignItems: 'center',
     width: 300,
-    background: '#CBB386',
+    background: '#2e2e2e',
     borderRadius: 10,
     paddingTop: 10,
     '& > *': {
@@ -156,7 +156,7 @@ const Chat = (props) => {
       <div
         className="chatHeader"
         style={{
-          background: '#9C7E46',
+          background: '#2e2e2e',
           height: 40,
           width: 300,
           borderRadius: 10,
@@ -171,7 +171,7 @@ const Chat = (props) => {
             width: 300,
             height: 400,
             borderRadius: 10,
-            background: '#CBB386',
+            background: '#2e2e2e',
           }}
         >
           <ul className="chat" id="chatList">

@@ -5,6 +5,7 @@ import { makeStyles } from '@material-ui/core/styles'
 import Rating from '@material-ui/lab/Rating'
 import Box from '@material-ui/core/Box'
 import { CADBURY_ABI, CADBURY_ADDRESS } from '../config'
+import huddle from '../huddle.png'
 
 const Web3 = require('web3')
 
@@ -50,7 +51,8 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   gtext: {
-    color: '#9c7e46',
+    color: 'white',
+    opacity: 0.55,
   },
   media: {
     paddingTop: '56.25%',
@@ -85,13 +87,14 @@ function Disconnected(props) {
       <header className="App-header">
         <div className="column">
           <div id="topleft">
+            <img src={huddle} className="Fleek-logo" alt="fleek-logo" />
             <Typography variant="h5" className={classes.gtext}>
-              🍫 Cadbury Meet
+              huddle 01
             </Typography>
           </div>
-          <h2>Disengaged</h2>
-          <p>How was the meeting ? (kovan) </p>
+          <Typography variant="h3" className={classes.gtext}>Disengaged </Typography>
           <br />
+          {/* <Typography variant="h5" className={classes.gtext}>How was the meeting ? (kovan)  </Typography>
           <br />
           <div className={classes.ratings}>
             <Rating
@@ -118,7 +121,7 @@ function Disconnected(props) {
             {value !== null && (
               <Box ml={5}>{labels[hover !== -1 ? hover : value]}</Box>
             )}
-          </div>
+          </div> */}
         </div>
       </header>
     </div>

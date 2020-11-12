@@ -2,6 +2,7 @@ import React from 'react'
 import './Component.css'
 import Typography from '@material-ui/core/Typography'
 import { makeStyles } from '@material-ui/core/styles'
+import huddle from '../huddle.png'
 
 const useStyles = makeStyles((theme) => ({
   root: {
@@ -32,7 +33,8 @@ const useStyles = makeStyles((theme) => ({
     },
   },
   gtext: {
-    color: '#9c7e46',
+    color: 'white',
+    opacity: 0.55,
   },
   media: {
     paddingTop: '56.25%',
@@ -46,8 +48,9 @@ function NotAvailable() {
       <header className="App-header">
         <div className="column">
           <div id="topleft">
+            <img src={huddle} className="Fleek-logo" alt="fleek-logo" />
             <Typography variant="h5" className={classes.gtext}>
-              🍫 Cadbury Meet
+              huddle 01
             </Typography>
           </div>
           <h2>404</h2>

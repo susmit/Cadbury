@@ -1,7 +1,12 @@
 import React from 'react'
 import './Component.css'
 import Button from '@material-ui/core/Button'
-import { makeStyles, withStyles } from '@material-ui/core/styles'
+import {
+  makeStyles,
+  withStyles,
+  createMuiTheme,
+  ThemeProvider,
+} from '@material-ui/core/styles'
 import Paper from '@material-ui/core/Paper'
 import Grid from '@material-ui/core/Grid'
 import Fab from '@material-ui/core/Fab'
@@ -15,6 +20,15 @@ import Typography from '@material-ui/core/Typography'
 import TextField from '@material-ui/core/TextField'
 import { PropTypes } from 'prop-types'
 import { connect } from 'react-redux'
+import huddle from '../huddle.png'
+
+import BottomNavigation from '@material-ui/core/BottomNavigation'
+import BottomNavigationAction from '@material-ui/core/BottomNavigationAction'
+import RestoreIcon from '@material-ui/icons/Restore'
+import FavoriteIcon from '@material-ui/icons/Favorite'
+import LocationOnIcon from '@material-ui/icons/LocationOn'
+import blue from '@material-ui/core/colors/blue'
+import green from '@material-ui/core/colors/green'
 
 const CssTextField = withStyles({
   root: {
@@ -48,22 +62,27 @@ const useStyles = makeStyles((theme) => ({
   root: {
     flexGrow: 1,
   },
-  gtext: {
-    color: '#9c7e46',
+  bottombar: {
+    flexGrow: 1,
+    position: 'fixed',
+    top: 'auto',
+    right: 0,
+    left: 0,
+    bottom: 0,
+    background: 'white',
+    opacity: 0.16,
+    boxShadow: '0 3px 5px 2px rgba(0, 0, 0, .9)',
   },
-  paper: {
-    padding: theme.spacing(0.5),
-    textAlign: 'center',
-    borderRadius: 10,
-    color: theme.palette.text.secondary,
-    background: 'linear-gradient(45deg, #9c7e46 30%, #CBB386 90%)',
+  gtext: {
+    color: 'white',
   },
   butt: {
-    background: 'linear-gradient(45deg, #9c7e46 30%, #CBB386 90%)',
+    background: 'white',
+    opacity: 0.08,
     border: 0,
     borderRadius: 20,
-    boxShadow: '0 3px 5px 2px rgba(255, 105, 135, .3)',
     color: 'white',
+    boxShadow: '0 3px 5px 2px rgba(0, 0, 0, .9)',
     height: 45,
     padding: '0 30px',
   },
@@ -78,14 +97,27 @@ const useStyles = makeStyles((theme) => ({
   },
 }))
 
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      main: blue[50],
+    },
+    secondary: {
+      main: green[50],
+    },
+  },
+})
+
 function Home(props) {
   const classes = useStyles()
+  const [value, setValue] = React.useState(0)
 
   return (
     <div className="column">
       <div id="topleft">
+        <img src={huddle} className="Fleek-logo" alt="fleek-logo" />
         <Typography variant="h5" className={classes.gtext}>
-          🍫 Cadbury Meet
+          huddle 01
         </Typography>
       </div>
       <div className={classes.root}>
@@ -120,7 +152,9 @@ function Home(props) {
                   style={{ textDecoration: 'none' }}
                 >
                   <Button variant="contained" className={classes.butt}>
-                    Join now
+                    <Typography variant="h5" className={classes.gtext}>
+                      huddle now
+                    </Typography>
                   </Button>
                 </Link>
               </div>
@@ -128,6 +162,20 @@ function Home(props) {
           </Grid>
         </Grid>
       </div>
+      <ThemeProvider theme={theme}>
+        <BottomNavigation
+          value={value}
+          onChange={(event, newValue) => {
+            setValue(newValue)
+          }}
+          showLabels
+          className={classes.bottombar}
+        >
+          <BottomNavigationAction label="Mic" icon={<MicIcon />} />
+          <BottomNavigationAction label="Camera" icon={<VideocamIcon />} />
+          <BottomNavigationAction label="Nearby" icon={<RestoreIcon />} />
+        </BottomNavigation>
+      </ThemeProvider>
     </div>
   )
 }

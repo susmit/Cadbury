@@ -23,18 +23,19 @@ import DialogContent from '@material-ui/core/DialogContent'
 import DialogContentText from '@material-ui/core/DialogContentText'
 import DialogTitle from '@material-ui/core/DialogTitle'
 import Button from '@material-ui/core/Button'
-import Snackbar from '@material-ui/core/Snackbar';
-import MuiAlert from '@material-ui/lab/Alert';
+import Snackbar from '@material-ui/core/Snackbar'
+import MuiAlert from '@material-ui/lab/Alert'
 import {
   BrowserView,
   MobileView,
   isBrowser,
-  isMobile
-} from "react-device-detect";
-import { JobStatus } from "@textile/grpc-powergate-client/dist/ffs/rpc/rpc_pb"
+  isMobile,
+} from 'react-device-detect'
+import { JobStatus } from '@textile/grpc-powergate-client/dist/ffs/rpc/rpc_pb'
 import CircularProgress from '@material-ui/core/CircularProgress'
 import { green } from '@material-ui/core/colors'
 
+import BottomBar from '../components/bottomBar'
 import { RecordRTCPromisesHandler, invokeSaveAsDialog } from 'recordrtc'
 const Box = require('3box')
 const Web3 = require('web3')
@@ -43,31 +44,44 @@ const host = 'https://webapi.pow.cadbury.textile.io'
 let recorder
 
 function Alert(props) {
-  return <MuiAlert elevation={6} variant="filled" {...props} />;
+  return <MuiAlert elevation={6} variant="filled" {...props} />
 }
 
 function getFileName(fileExtension) {
-  var d = new Date();
-  var year = d.getUTCFullYear();
-  var month = d.getUTCMonth();
-  var date = d.getUTCDate();
-  return 'Cadbury-' + year + month + date + '-' + getRandomString() + '.' + fileExtension;
+  var d = new Date()
+  var year = d.getUTCFullYear()
+  var month = d.getUTCMonth()
+  var date = d.getUTCDate()
+  return (
+    'Cadbury-' +
+    year +
+    month +
+    date +
+    '-' +
+    getRandomString() +
+    '.' +
+    fileExtension
+  )
 }
-
 
 function getRandomString() {
-  if (window.crypto && window.crypto.getRandomValues && navigator.userAgent.indexOf('Safari') === -1) {
-      var a = window.crypto.getRandomValues(new Uint32Array(3)),
-          token = '';
-      for (var i = 0, l = a.length; i < l; i++) {
-          token += a[i].toString(36);
-      }
-      return token;
+  if (
+    window.crypto &&
+    window.crypto.getRandomValues &&
+    navigator.userAgent.indexOf('Safari') === -1
+  ) {
+    var a = window.crypto.getRandomValues(new Uint32Array(3)),
+      token = ''
+    for (var i = 0, l = a.length; i < l; i++) {
+      token += a[i].toString(36)
+    }
+    return token
   } else {
-      return (Math.random() * new Date().getTime()).toString(36).replace(/\./g, '');
+    return (Math.random() * new Date().getTime())
+      .toString(36)
+      .replace(/\./g, '')
   }
 }
-
 
 class MeetC extends Component {
   constructor(props) {
@@ -113,8 +127,7 @@ class MeetC extends Component {
       noDownloadSnack: false,
 
       //yes download snack
-      yesDownloadSnack:false,
-
+      yesDownloadSnack: false,
     }
 
     this.serviceIP = 'https://meet-cadbury.herokuapp.com/webrtcPeer'
@@ -125,16 +138,16 @@ class MeetC extends Component {
   //no download Snack
   handleClick = () => {
     this.setState({ noDownloadSnack: true })
-  };
+  }
 
   //no download snack
   handleClose = (event, reason) => {
     if (reason === 'clickaway') {
-      return;
+      return
     }
 
-    this.setState({ noDownloadSnack: false})
-  };
+    this.setState({ noDownloadSnack: false })
+  }
 
   //download dialog
   openDialog() {
@@ -196,18 +209,17 @@ class MeetC extends Component {
       recordingStatus: 'Recording Stopped',
     })
     let blob = await recorder.getBlob()
-    var fileName = getFileName('webm');
+    var fileName = getFileName('webm')
     invokeSaveAsDialog(blob, fileName)
   }
 
   // textile powergate fc //ffs login //time consuming
   handleFFS = async () => {
-
-    if(this.state.powSetToken){
-      console.log("pow token already set")
-      return ;
-    }else{
-      console.log("pow not set")
+    if (this.state.powSetToken) {
+      console.log('pow token already set')
+      return
+    } else {
+      console.log('pow not set')
     }
 
     if (!window.ethereum || !window.ethereum.isMetaMask) {
@@ -329,7 +341,12 @@ class MeetC extends Component {
 
   //textile powergate fc
   createWalletAddr = () => async () => {
-    const { addr } = await this.pow.ffs.newAddr("Cadbury-Filecoin", "bls", false);}
+    const { addr } = await this.pow.ffs.newAddr(
+      'Cadbury-Filecoin',
+      'bls',
+      false,
+    )
+  }
 
   //textile powergate fc
   getFFSInfo = async () => {
@@ -344,15 +361,13 @@ class MeetC extends Component {
 
   //textile powergate fc
   setDefaultConfig = (defaultConfig) => async () => {
-    console.log(defaultConfig);
-    await this.pow.ffs.setDefaultConfig(defaultConfig);
-  };
+    console.log(defaultConfig)
+    await this.pow.ffs.setDefaultConfig(defaultConfig)
+  }
 
   //textile powergate fc
   uploadToFFS = async () => {
-
-    console.log("1 ffs filecoin upload initiated")
-
+    console.log('1 ffs filecoin upload initiated')
 
     console.log('Recording Stopped')
     await recorder.stopRecording()
@@ -361,36 +376,34 @@ class MeetC extends Component {
     })
     let blob = await recorder.getBlob()
 
-     // generating a random file name
-     var fileName = getFileName('webm');
+    // generating a random file name
+    var fileName = getFileName('webm')
 
-     // we need to upload "File" --- not "Blob"
-     var fileObject = new File([blob], fileName, {
-         type: 'video/webm'
-     });
+    // we need to upload "File" --- not "Blob"
+    var fileObject = new File([blob], fileName, {
+      type: 'video/webm',
+    })
 
-     var arrayBuffer, uint8Array;
-     var fileReader = new FileReader();
-     fileReader.readAsArrayBuffer(fileObject);
+    var arrayBuffer, uint8Array
+    var fileReader = new FileReader()
+    fileReader.readAsArrayBuffer(fileObject)
 
-     fileReader.onload = async () => {
-      arrayBuffer = this.result;
-      uint8Array = new Uint8Array(arrayBuffer);
-           // cache data in IPFS in preparation to store it using FFS
+    fileReader.onload = async () => {
+      arrayBuffer = this.result
+      uint8Array = new Uint8Array(arrayBuffer)
+      // cache data in IPFS in preparation to store it using FFS
       //const buffer = "fs.readFileSync(`path/to/a/file`)"
       const { cid } = await this.pow.ffs.stage(uint8Array)
 
-      console.log("2 uploaded to IPFS")
+      console.log('2 uploaded to IPFS')
       console.log(cid)
-
 
       // store the data in FFS using the default storage configuration
       const { jobId } = await this.pow.ffs.pushStorageConfig(cid)
 
-      console.log("3 Pushed to filecoin network bia ffs cold")
+      console.log('3 Pushed to filecoin network bia ffs cold')
       console.log(jobId)
     }
-
 
     // const jobsCancel = this.pow.ffs.watchJobs((job) => {
     //   if (job.status === JobStatus.JOB_STATUS_CANCELED) {
@@ -401,21 +414,17 @@ class MeetC extends Component {
     //     console.log("job success!")
     //   }
     // }, jobId)
-  
 
     // // watch all FFS events for a cid
     // const logsCancel = this.pow.ffs.watchLogs((logEvent) => {
     //   console.log(`received event for cid ${logEvent.cid}`)
     // }, cid)
+  }
 
-  
-
-  };
-  
   //textile powergate fc
   getCidConfig = (payload) => async (dispatch) => {
-    const { config } = await this.pow.ffs.getCidConfig(payload.cid);
-    console.log({ getCidConfig: config });
+    const { config } = await this.pow.ffs.getCidConfig(payload.cid)
+    console.log({ getCidConfig: config })
     // dispatch({
     //   type: types.GET_CID_CONFIG,
     //   payload: {
@@ -423,12 +432,12 @@ class MeetC extends Component {
     //     desiredConfig: config,
     //   },
     // });
-  };
-  
+  }
+
   //textile powergate fc
   getActualCidConfig = (payload) => async (dispatch) => {
-    const { cidInfo } = await this.pow.ffs.show(payload.cid);
-    console.log({ getActualCidConfig: cidInfo });
+    const { cidInfo } = await this.pow.ffs.show(payload.cid)
+    console.log({ getActualCidConfig: cidInfo })
     // dispatch({
     //   type: types.GET_ACTUAL_CID_CONFIG,
     //   payload: {
@@ -436,16 +445,16 @@ class MeetC extends Component {
     //     cidInfo: cidInfo,
     //   },
     // });
-  };
-  
+  }
+
   //textile powergate fc
   getDataFromFFS = (payload) => async (dispatch) => {
-    const bytes = await this.pow.ffs.get(payload.cid);
-    console.log(bytes);
-  
-    let blob = new Blob([bytes], { type: "octet/stream" });
-    let url = window.URL.createObjectURL(blob);
-  
+    const bytes = await this.pow.ffs.get(payload.cid)
+    console.log(bytes)
+
+    let blob = new Blob([bytes], { type: 'octet/stream' })
+    let url = window.URL.createObjectURL(blob)
+
     // dispatch({
     //   type: types.GET_DATA_FROM_FFS,
     //   payload: {
@@ -453,15 +462,15 @@ class MeetC extends Component {
     //     url: url,
     //   },
     // });
-  };
-  
+  }
+
   //textile powergate fc
   sendFIL = (payload) => async (dispatch) => {
     await this.pow.ffs.sendFil(
       payload.addrsList[0].addr,
-      "<some other address>",
-      1000
-    );
+      '<some other address>',
+      1000,
+    )
     // dispatch({
     //   type: types.GET_DATA_FROM_FFS,
     //   payload: {
@@ -470,10 +479,9 @@ class MeetC extends Component {
     //     amount: 1000,
     //   },
     // });
-  };
+  }
 
-
-  // webrtc 
+  // webrtc
   getLocalStream = () => {
     const success = (stream) => {
       window.localStream = stream
@@ -824,32 +832,32 @@ class MeetC extends Component {
     return (
       <div>
         {/* <Draggable> */}
-          <div
-            style={{
-              zIndex: 100,
-              position: 'absolute',
-              left: 0,
-              bottom: 100,
-              //cursor: 'pointer',
-              //padding: 30,
+        <div
+          style={{
+            zIndex: 100,
+            position: 'absolute',
+            left: 0,
+            bottom: 190,
+            //cursor: 'pointer',
+            //padding: 30,
+          }}
+        >
+          <Video
+            videoStyles={{
+              width: 200,
             }}
-          >
-            <Video
-              videoStyles={{
-                width: 200,
-              }}
-              frameStyle={{
-                width: 200,
-                margin: 5,
-                borderRadius: 10,
-                backgroundColor: '#CBB386',
-              }}
-              showMuteControls={true}
-              videoStream={this.state.localStream}
-              autoPlay
-              muted
-            ></Video>
-          </div>
+            frameStyle={{
+              width: 200,
+              margin: 5,
+              borderRadius: 10,
+              backgroundColor: '#1F1B24',
+            }}
+            showMuteControls={true}
+            videoStream={this.state.localStream}
+            autoPlay
+            muted
+          ></Video>
+        </div>
         {/* </Draggable> */}
         <Video
           videoStyles={{
@@ -858,7 +866,7 @@ class MeetC extends Component {
             bottom: 0,
             minWidth: '100%',
             minHeight: '100%',
-            backgroundColor: '#202040',
+            backgroundColor: '#121212',
           }}
           videoStream={
             this.state.selectedVideo && this.state.selectedVideo.stream
@@ -1012,11 +1020,15 @@ class MeetC extends Component {
                 >
                   Download
                 </Button>
-                <Snackbar open={this.state.noDownloadSnack} autoHideDuration={3000} onClose={()=>this.handleClose()}>
-                    <Alert onClose={()=>this.handleClose()} severity="warning">
-                      No meeting recording found !
-                    </Alert>
-                  </Snackbar>
+                <Snackbar
+                  open={this.state.noDownloadSnack}
+                  autoHideDuration={3000}
+                  onClose={() => this.handleClose()}
+                >
+                  <Alert onClose={() => this.handleClose()} severity="warning">
+                    No meeting recording found !
+                  </Alert>
+                </Snackbar>
                 {/* <Button
                   onClick={() => {
     
@@ -1029,18 +1041,16 @@ class MeetC extends Component {
                 </Button> */}
                 <Button
                   onClick={async () => {
-
                     if (this.state.recordingStatus !== null) {
                       // stop recording logic
                       await this.handleFFS()
                       await this.uploadToFFS()
                       await this.closeDialog()
                     }
-                     // no meeting recording foung
-                      //this.closeDialog()
-                      //for no download snack
+                    // no meeting recording foung
+                    //this.closeDialog()
+                    //for no download snack
                     this.handleClick()
-           
                   }}
                   color="primary"
                   autoFocus
@@ -1073,34 +1083,35 @@ class MeetC extends Component {
         <br />
 
         {/* <Draggable> */}
-          <div
-            style={{
-              zIndex: 100,
-              position: 'absolute',
-              right: 0,
-              cursor: 'move',
-              top: 1,
+        <div
+          style={{
+            zIndex: 100,
+            position: 'absolute',
+            right: 0,
+            cursor: 'move',
+            top: 1,
+          }}
+        >
+          <Chat
+            user={{
+              uid: (this.socket && this.socket.id) || '',
             }}
-          >
-            <Chat
-              user={{
-                uid: (this.socket && this.socket.id) || '',
-              }}
-              messages={this.state.messages}
-              sendMessage={(message) => {
-                this.setState((prevState) => {
-                  return { messages: [...prevState.messages, message] }
-                })
-                this.state.sendChannels.map((sendChannel) => {
-                  sendChannel.readyState === 'open' &&
-                    sendChannel.send(JSON.stringify(message))
-                })
-                this.sendToPeer('new-message', JSON.stringify(message), {
-                  local: this.socket.id,
-                })
-              }}
-            />
-          </div>
+            messages={this.state.messages}
+            sendMessage={(message) => {
+              this.setState((prevState) => {
+                return { messages: [...prevState.messages, message] }
+              })
+              this.state.sendChannels.map((sendChannel) => {
+                sendChannel.readyState === 'open' &&
+                  sendChannel.send(JSON.stringify(message))
+              })
+              this.sendToPeer('new-message', JSON.stringify(message), {
+                local: this.socket.id,
+              })
+            }}
+          />
+        {/* <BottomBar/> */}
+        </div>
         {/* </Draggable> */}
       </div>
     )
